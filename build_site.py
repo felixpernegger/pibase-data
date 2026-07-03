@@ -61,6 +61,13 @@ def main():
          "holds": x["holds"], "note": x.get("note", ""), "date": x["date"]}
         for x in engine.assertions]
 
+    # everything the in-browser engine needs to apply assertions locally:
+    # clauses over literals (2*i for prop_ids[i]=true, 2*i+1 for false) and the
+    # deduced trait assignment of every space (+ virtual counterexamples from
+    # accepted false assertions) as '1'/'0'/'?' strings aligned with prop_ids.
+    def model(val):
+        return "".join("?" if v is None else ("1" if v else "0") for v in val)
+
     data = {
         "repo": slug,
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -68,6 +75,10 @@ def main():
         "spaces": len(engine.space_vals),
         "assertions": assertions,
         "pairs": pairs,
+        "prop_ids": engine.prover.prop_ids,
+        "clauses": [list(c) for c in engine.prover.clauses],
+        "models": [model(v) for v in engine.space_vals.values()]
+                  + [model(v) for _, v in engine.virtual_vals],
     }
 
     OUT.mkdir(exist_ok=True)
@@ -75,6 +86,8 @@ def main():
     html = (ROOT / "site_template.html").read_text(encoding="utf-8")
     html = html.replace("__REPO__", slug)
     (OUT / "index.html").write_text(html, encoding="utf-8")
+    (OUT / "engine.js").write_text((ROOT / "site_engine.js").read_text(encoding="utf-8"),
+                                   encoding="utf-8")
     print(f"wrote _site/index.html and _site/data.json "
           f"({counts['unknown']} open, {len(assertions)} accepted assertions)")
 

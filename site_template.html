@@ -8,6 +8,7 @@
   window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
 </script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="engine.js"></script>
 <style>
   :root {
     --fg: #1a1d21; --muted: #6b7280; --line: #e5e7eb; --bg: #f6f7f9;
@@ -61,7 +62,8 @@
     color: var(--muted); display: none;
   }
   .logbox.error { color: var(--false); background: #fdf1f0; }
-  h2 { font-size: 16px; margin: 28px 0 10px; }
+  h2 { font-size: 16px; margin: 28px 0 4px; }
+  h2 + .sub { margin-bottom: 10px; }
   table { width: 100%; border-collapse: collapse; background: var(--card);
           border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
   th, td { padding: 8px 12px; text-align: left; font-size: 14px; border-top: 1px solid var(--line); }
@@ -70,6 +72,8 @@
   .holds { color: var(--true); font-weight: 600; }
   .fails { color: var(--false); font-weight: 600; }
   .note-cell { color: var(--muted); }
+  .rm { background: none; border: 0; color: var(--muted); font-size: 15px; padding: 2px 6px; cursor: pointer; }
+  .rm:hover { color: var(--false); }
   .empty { color: var(--muted); font-size: 14px; padding: 14px; }
   .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 20px; }
   .tab {
@@ -108,15 +112,16 @@
   <div class="sub">
     implications between <a href="https://topology.pi-base.org" target="_blank" rel="noopener">pi-base</a>
     properties that are neither provable from its theorems nor refuted by any of its spaces.
-    Know the answer to one? Assert it below — it opens a pre-filled GitHub issue,
-    and once reviewed the site updates.
+    Know the answer to one? Assert it below — it takes effect immediately in your browser
+    and opens a pre-filled GitHub issue; once approved it goes live for everyone.
   </div>
 
   <div class="stats">
     <div class="chip"><b id="c-unknown">…</b><span>open</span></div>
     <div class="chip"><b id="c-refuted">…</b><span>refuted</span></div>
     <div class="chip"><b id="c-provable">…</b><span>provable</span></div>
-    <div class="chip"><b id="c-settled">…</b><span id="c-settled-label">accepted assertions</span></div>
+    <div class="chip"><b id="c-settled">…</b><span>accepted assertions</span></div>
+    <div class="chip"><b id="c-pending">…</b><span>your pending</span></div>
   </div>
 
   <div class="tabs">
@@ -137,6 +142,11 @@
     <div id="log" class="logbox"></div>
   </div>
 
+  <h2>your local assertions (pending approval)</h2>
+  <div class="sub">applied instantly, but only in your browser (stored locally);
+    each becomes permanent for everyone once its GitHub issue is approved</div>
+  <div id="local-assertions"></div>
+
   <h2>accepted assertions</h2>
   <div id="assertions"></div>
   </section>
@@ -155,6 +165,7 @@
     <a href="https://github.com/__REPO__" target="_blank" rel="noopener">__REPO__</a>
     · deductions by a local reimplementation of the
     <a href="https://github.com/pi-base/web" target="_blank" rel="noopener">pi-base prover</a>
+    (also running in your browser for instant local effects)
     · asserting opens a GitHub issue (account required); accepted assertions are
     reviewed and committed to <code>assertions.json</code>
   </footer>
@@ -162,14 +173,21 @@
 
 <script>
 const REPO = '__REPO__';
+const LS_KEY = 'pibase-local-assertions';
 const $ = id => document.getElementById(id);
-let DATA = null;
-let pending = null;
+
+let DATA = null;         // data.json payload (server-built state)
+let LITIDX = null;       // uid -> property index
+let LOCAL = [];          // visitor's local assertions (localStorage)
+let openPairs = [];      // open list after applying LOCAL
+let adjCounts = null;    // counts after applying LOCAL
+let pending = null;      // pair shown on the Random card
 
 function typeset(el) {
   if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {});
 }
 
+function litOf(l) { return LITIDX.get(l.uid) * 2 + (l.value ? 0 : 1); }
 function shortLit(lit) { return (lit.value ? '' : '~') + 'P' + parseInt(lit.uid.slice(1), 10); }
 function shortStmt(pair) { return shortLit(pair.if) + ' => ' + shortLit(pair.then); }
 
@@ -207,6 +225,75 @@ function showLog(text, isError, el) {
   log.style.display = text ? 'block' : 'none';
 }
 
+// ------------------------------------------------ local assertion engine
+
+function loadLocal() {
+  try { LOCAL = JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch (e) { LOCAL = []; }
+}
+function saveLocal() { localStorage.setItem(LS_KEY, JSON.stringify(LOCAL)); }
+
+// Re-derive openPairs/adjCounts from server state + LOCAL. Local assertions
+// that became redundant or contradictory (e.g. accepted upstream since they
+// were made) are dropped; returns human-readable notices about those.
+function recompute() {
+  const np = DATA.prop_ids.length;
+  let clauses = DATA.clauses.slice();
+  let models = DATA.models.slice();
+  const kept = [], notices = [];
+
+  for (const a of LOCAL) {
+    const la = litOf(a.if), lb = litOf(a.then);
+    const byProp = PiEngine.makeIndex(clauses, np);
+    const refuted = PiEngine.hasModel(models, la, lb ^ 1);
+    const pr = PiEngine.propagate(clauses, byProp, np, [la, lb ^ 1]);
+    const s = shortStmt(a) + ' is ' + a.holds;
+    if (pr.contradiction && a.holds) {
+      notices.push('dropped local assertion (already provable — possibly accepted): ' + s);
+    } else if (refuted && !a.holds) {
+      notices.push('dropped local assertion (already refuted — possibly accepted): ' + s);
+    } else if (refuted && a.holds) {
+      notices.push('dropped local assertion (now refuted by the data): ' + s);
+    } else if (pr.contradiction && !a.holds) {
+      notices.push('dropped local assertion (now provable — conflicts with the data): ' + s);
+    } else if (a.holds) {
+      // new implication: propagate it through every known space/virtual model
+      const newClauses = clauses.concat([[la ^ 1, lb]]);
+      const newByProp = PiEngine.makeIndex(newClauses, np);
+      const newModels = PiEngine.recloseModels(models, newClauses, newByProp, np);
+      if (newModels === null) {
+        notices.push('dropped local assertion (contradicts a known space): ' + s);
+      } else {
+        clauses = newClauses;
+        models = newModels;
+        kept.push(a);
+      }
+    } else {
+      models.push(PiEngine.valToModel(pr.val));
+      kept.push(a);
+    }
+  }
+  if (kept.length !== LOCAL.length) { LOCAL = kept; saveLocal(); }
+
+  const byProp = PiEngine.makeIndex(clauses, np);
+  openPairs = [];
+  let addRef = 0, addProv = 0;
+  for (const p of DATA.pairs) {
+    const a = litOf(p.if), b = litOf(p.then);
+    if (PiEngine.hasModel(models, a, b ^ 1)) { addRef++; continue; }
+    if (PiEngine.propagate(clauses, byProp, np, [a, b ^ 1]).contradiction) { addProv++; continue; }
+    openPairs.push(p);
+  }
+  adjCounts = {
+    unknown: openPairs.length,
+    refuted: DATA.counts.refuted + addRef,
+    provable: DATA.counts.provable + addProv,
+  };
+  return notices;
+}
+
+// ------------------------------------------------ rendering
+
 function setButtons() {
   $('btn-true').disabled = $('btn-false').disabled = !pending;
 }
@@ -232,50 +319,25 @@ function renderPending() {
 }
 
 function drawRandom() {
-  pending = DATA.pairs.length
-    ? DATA.pairs[Math.floor(Math.random() * DATA.pairs.length)] : null;
-  showLog('', false);
+  pending = openPairs.length
+    ? openPairs[Math.floor(Math.random() * openPairs.length)] : null;
   renderPending();
 }
 
-function submit(pair, holds, note, logEl) {
-  if (!note.trim()) {
-    showLog('a note (reference / justification) is required', true, logEl);
-    return false;
-  }
-  window.open(issueUrl(pair, holds, note.trim()), '_blank', 'noopener');
-  showLog('opened a pre-filled GitHub issue in a new tab — press "Create" there '
-          + 'to submit. It is checked automatically and appears here once accepted.',
-          false, logEl);
-  return true;
-}
-
-function verdict(holds) {
-  if (!pending) return;
-  submit(pending, holds, $('note').value, $('log'));
-}
-
 function renderStats() {
-  $('c-unknown').textContent = DATA.counts.unknown.toLocaleString();
-  $('c-refuted').textContent = DATA.counts.refuted.toLocaleString();
-  $('c-provable').textContent = DATA.counts.provable.toLocaleString();
+  $('c-unknown').textContent = adjCounts.unknown.toLocaleString();
+  $('c-refuted').textContent = adjCounts.refuted.toLocaleString();
+  $('c-provable').textContent = adjCounts.provable.toLocaleString();
   $('c-settled').textContent = DATA.assertions.length.toLocaleString();
+  $('c-pending').textContent = LOCAL.length.toLocaleString();
   $('generated').textContent = DATA.generated;
 }
 
-function renderAssertions() {
-  const holder = $('assertions');
-  holder.textContent = '';
-  if (!DATA.assertions.length) {
-    const div = document.createElement('div');
-    div.className = 'empty';
-    div.textContent = 'none yet';
-    holder.appendChild(div);
-    return;
-  }
+function assertionTable(rows, removable) {
   const table = document.createElement('table');
-  table.innerHTML = '<tr><th>statement</th><th>verdict</th><th>note</th><th>date</th></tr>';
-  for (const a of DATA.assertions) {
+  table.innerHTML = '<tr><th>statement</th><th>verdict</th><th>note</th><th>date</th>'
+                    + (removable ? '<th></th>' : '') + '</tr>';
+  rows.forEach((a, i) => {
     const tr = table.insertRow();
     const stmt = tr.insertCell();
     stmt.appendChild(litSpan(a.if));
@@ -288,12 +350,91 @@ function renderAssertions() {
     note.textContent = a.note;
     note.className = 'note-cell';
     tr.insertCell().textContent = a.date;
+    if (removable) {
+      const rm = document.createElement('button');
+      rm.className = 'rm';
+      rm.textContent = '✕';
+      rm.title = 'remove this local assertion (browser only)';
+      rm.onclick = () => { LOCAL.splice(i, 1); saveLocal(); refreshAll(recompute()); };
+      tr.insertCell().appendChild(rm);
+    }
+  });
+  return table;
+}
+
+function renderAssertions() {
+  const holder = $('assertions');
+  holder.textContent = '';
+  if (!DATA.assertions.length) {
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = 'none yet';
+    holder.appendChild(div);
+    return;
   }
-  holder.appendChild(table);
+  holder.appendChild(assertionTable(DATA.assertions, false));
   typeset(holder);
 }
 
-// ---------------------------------------------------------- open-list tab
+function renderLocal() {
+  const holder = $('local-assertions');
+  holder.textContent = '';
+  if (!LOCAL.length) {
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = 'none — your verdicts take effect here immediately';
+    holder.appendChild(div);
+    return;
+  }
+  holder.appendChild(assertionTable(LOCAL, true));
+  typeset(holder);
+}
+
+function refreshAll(notices) {
+  renderStats();
+  renderLocal();
+  listBuilt = false;
+  if (!$('tab-list').hidden) buildList();
+  if (pending && !openPairs.includes(pending)) drawRandom();
+  if (notices && notices.length) showLog(notices.join('\n'), false);
+}
+
+// ------------------------------------------------ asserting
+
+function submit(pair, holds, note, logEl) {
+  if (!note.trim()) {
+    showLog('a note (reference / justification) is required', true, logEl);
+    return false;
+  }
+  if (!openPairs.includes(pair)) {
+    showLog('this implication is no longer open (given your local assertions)', true, logEl);
+    return false;
+  }
+  LOCAL.push({ if: pair.if, then: pair.then, holds: holds, note: note.trim(),
+               date: new Date().toISOString().slice(0, 10) });
+  saveLocal();
+  const before = openPairs.length;
+  const notices = recompute();
+  window.open(issueUrl(pair, holds, note.trim()), '_blank', 'noopener');
+  refreshAll();
+  const settled = before - openPairs.length;
+  showLog('applied locally: settled ' + settled + ' open implication'
+    + (settled === 1 ? '' : 's') + ' in your browser.\n'
+    + 'A pre-filled GitHub issue opened in a new tab — press "Create" there to '
+    + 'submit it for review; once approved it becomes permanent for everyone.'
+    + (notices.length ? '\n' + notices.join('\n') : ''), false, logEl);
+  return true;
+}
+
+function verdict(holds) {
+  if (!pending) return;
+  if (submit(pending, holds, $('note').value, $('log'))) {
+    $('note').value = '';
+    drawRandom();
+  }
+}
+
+// ------------------------------------------------ open-list tab
 
 let listBuilt = false;
 let panelRow = null;
@@ -321,7 +462,7 @@ function openPanel(tr, pair, holds) {
   input.placeholder = 'note / reference (required)';
   const save = document.createElement('button');
   save.className = holds ? 'save-t' : 'save-f';
-  save.textContent = 'open GitHub issue (' + holds + ')';
+  save.textContent = 'assert ' + holds;
   const cancel = document.createElement('button');
   cancel.className = 'cancel';
   cancel.textContent = 'cancel';
@@ -341,11 +482,12 @@ function openPanel(tr, pair, holds) {
 
 function buildList() {
   listBuilt = true;
+  closePanel();
   const holder = $('list-holder');
   const table = document.createElement('table');
   table.id = 'list-table';
   table.innerHTML = '<tr><th>#</th><th>implication</th><th></th></tr>';
-  DATA.pairs.forEach((p, i) => {
+  openPairs.forEach((p, i) => {
     const tr = table.insertRow();
     tr.dataset.key = (p.if.name + ' ' + p.if.uid + ' ' + p.then.name + ' '
                       + p.then.uid).toLowerCase();
@@ -390,7 +532,7 @@ function filterList() {
 $('tab-btn-assert').onclick = () => switchTab('assert');
 $('tab-btn-list').onclick = () => switchTab('list');
 $('list-search').addEventListener('input', () => { closePanel(); filterList(); });
-$('btn-random').onclick = drawRandom;
+$('btn-random').onclick = () => { showLog('', false); drawRandom(); };
 $('btn-true').onclick = () => verdict(true);
 $('btn-false').onclick = () => verdict(false);
 
@@ -398,9 +540,14 @@ fetch('data.json')
   .then(r => r.json())
   .then(d => {
     DATA = d;
+    LITIDX = new Map(d.prop_ids.map((uid, i) => [uid, i]));
+    loadLocal();
+    const notices = recompute();
     renderStats();
     renderAssertions();
+    renderLocal();
     drawRandom();
+    if (notices.length) showLog(notices.join('\n'), false);
   })
   .catch(e => showLog('failed to load data.json: ' + e, true));
 </script>
