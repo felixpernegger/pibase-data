@@ -82,6 +82,11 @@
   }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .tab:hover { color: var(--fg); }
+  #btn-submit { margin-left: auto; margin-bottom: 6px; background: var(--accent); padding: 8px 18px; }
+  #btn-submit:hover:enabled { background: #1d4685; }
+  .sub-status { font-size: 13px; white-space: nowrap; }
+  .sub-status.done { color: var(--true); }
+  .sub-status.todo { color: #b45309; font-weight: 600; }
   #list-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
   #list-search {
     flex: 1 1 280px; max-width: 420px; padding: 9px 12px; font: inherit;
@@ -112,8 +117,9 @@
   <div class="sub">
     implications between <a href="https://topology.pi-base.org" target="_blank" rel="noopener">pi-base</a>
     properties that are neither provable from its theorems nor refuted by any of its spaces.
-    Know the answer to one? Assert it below — it takes effect immediately in your browser
-    and opens a pre-filled GitHub issue; once approved it goes live for everyone.
+    Know the answer to one? Assert it below — it takes effect immediately in your browser.
+    When you're done, press <b>Submit</b> to send your verdicts for review (one GitHub
+    issue); once approved they go live for everyone.
   </div>
 
   <div class="stats">
@@ -127,6 +133,7 @@
   <div class="tabs">
     <button class="tab active" id="tab-btn-assert">Random</button>
     <button class="tab" id="tab-btn-list">Open list</button>
+    <button id="btn-submit" disabled>Submit (0)</button>
   </div>
 
   <section id="tab-assert">
@@ -142,9 +149,10 @@
     <div id="log" class="logbox"></div>
   </div>
 
-  <h2>your local assertions (pending approval)</h2>
+  <h2>your local assertions</h2>
   <div class="sub">applied instantly, but only in your browser (stored locally);
-    each becomes permanent for everyone once its GitHub issue is approved</div>
+    press <b>Submit</b> to send the unsubmitted ones for review — they become
+    permanent for everyone once approved</div>
   <div id="local-assertions"></div>
 
   <h2>accepted assertions</h2>
@@ -191,14 +199,37 @@ function litOf(l) { return LITIDX.get(l.uid) * 2 + (l.value ? 0 : 1); }
 function shortLit(lit) { return (lit.value ? '' : '~') + 'P' + parseInt(lit.uid.slice(1), 10); }
 function shortStmt(pair) { return shortLit(pair.if) + ' => ' + shortLit(pair.then); }
 
-function issueUrl(pair, holds, note) {
-  const stmt = shortStmt(pair);
-  return 'https://github.com/' + REPO + '/issues/new'
-    + '?template=assertion.yml'
-    + '&title=' + encodeURIComponent('[assertion] ' + stmt + ' is ' + holds)
-    + '&statement=' + encodeURIComponent(stmt)
-    + '&verdict=' + encodeURIComponent(String(holds))
-    + '&note=' + encodeURIComponent(note);
+function unsubmitted() { return LOCAL.filter(a => !a.submitted); }
+
+function updateSubmit() {
+  const n = unsubmitted().length;
+  const btn = $('btn-submit');
+  btn.textContent = 'Submit (' + n + ')';
+  btn.disabled = n === 0;
+}
+
+function submitAll() {
+  const items = unsubmitted();
+  if (!items.length) return;
+  let body = 'Verdicts submitted from the website:\n\n';
+  for (const a of items) {
+    body += 'statement: ' + shortStmt(a) + '\nverdict: ' + a.holds
+          + '\nnote: ' + a.note + '\n\n';
+  }
+  const url = 'https://github.com/' + REPO + '/issues/new'
+    + '?title=' + encodeURIComponent('[assertion' + (items.length === 1 ? '' : 's')
+        + '] ' + items.length + ' verdict' + (items.length === 1 ? '' : 's')
+        + ' from the website')
+    + '&body=' + encodeURIComponent(body);
+  window.open(url, '_blank', 'noopener');
+  for (const a of items) a.submitted = true;
+  saveLocal();
+  renderLocal();
+  updateSubmit();
+  showLog('opened one pre-filled GitHub issue with your ' + items.length
+    + ' verdict' + (items.length === 1 ? '' : 's')
+    + ' — press "Create" there to submit for review. Once approved, they go '
+    + 'live for everyone.', false);
 }
 
 function litSpan(lit) {
@@ -230,6 +261,8 @@ function showLog(text, isError, el) {
 function loadLocal() {
   try { LOCAL = JSON.parse(localStorage.getItem(LS_KEY)) || []; }
   catch (e) { LOCAL = []; }
+  // entries saved before the Submit flow existed were opened as issues directly
+  for (const a of LOCAL) if (a.submitted === undefined) a.submitted = true;
 }
 function saveLocal() { localStorage.setItem(LS_KEY, JSON.stringify(LOCAL)); }
 
@@ -336,7 +369,7 @@ function renderStats() {
 function assertionTable(rows, removable) {
   const table = document.createElement('table');
   table.innerHTML = '<tr><th>statement</th><th>verdict</th><th>note</th><th>date</th>'
-                    + (removable ? '<th></th>' : '') + '</tr>';
+                    + (removable ? '<th>status</th><th></th>' : '') + '</tr>';
   rows.forEach((a, i) => {
     const tr = table.insertRow();
     const stmt = tr.insertCell();
@@ -351,6 +384,9 @@ function assertionTable(rows, removable) {
     note.className = 'note-cell';
     tr.insertCell().textContent = a.date;
     if (removable) {
+      const st = tr.insertCell();
+      st.textContent = a.submitted ? '✓ submitted' : 'not submitted';
+      st.className = 'sub-status ' + (a.submitted ? 'done' : 'todo');
       const rm = document.createElement('button');
       rm.className = 'rm';
       rm.textContent = '✕';
@@ -393,6 +429,7 @@ function renderLocal() {
 function refreshAll(notices) {
   renderStats();
   renderLocal();
+  updateSubmit();
   listBuilt = false;
   if (!$('tab-list').hidden) buildList();
   if (pending && !openPairs.includes(pending)) drawRandom();
@@ -411,17 +448,16 @@ function submit(pair, holds, note, logEl) {
     return false;
   }
   LOCAL.push({ if: pair.if, then: pair.then, holds: holds, note: note.trim(),
-               date: new Date().toISOString().slice(0, 10) });
+               date: new Date().toISOString().slice(0, 10), submitted: false });
   saveLocal();
   const before = openPairs.length;
   const notices = recompute();
-  window.open(issueUrl(pair, holds, note.trim()), '_blank', 'noopener');
   refreshAll();
   const settled = before - openPairs.length;
   showLog('applied locally: settled ' + settled + ' open implication'
     + (settled === 1 ? '' : 's') + ' in your browser.\n'
-    + 'A pre-filled GitHub issue opened in a new tab — press "Create" there to '
-    + 'submit it for review; once approved it becomes permanent for everyone.'
+    + 'When you are done, press Submit (top right) to send your verdicts for '
+    + 'review — they become permanent for everyone once approved.'
     + (notices.length ? '\n' + notices.join('\n') : ''), false, logEl);
   return true;
 }
@@ -535,6 +571,13 @@ $('list-search').addEventListener('input', () => { closePanel(); filterList(); }
 $('btn-random').onclick = () => { showLog('', false); drawRandom(); };
 $('btn-true').onclick = () => verdict(true);
 $('btn-false').onclick = () => verdict(false);
+$('btn-submit').onclick = submitAll;
+window.addEventListener('beforeunload', e => {
+  if (unsubmitted().length) {
+    e.preventDefault();
+    e.returnValue = 'You have unsubmitted verdicts — press Submit to send them for review.';
+  }
+});
 
 fetch('data.json')
   .then(r => r.json())
@@ -546,6 +589,7 @@ fetch('data.json')
     renderStats();
     renderAssertions();
     renderLocal();
+    updateSubmit();
     drawRandom();
     if (notices.length) showLog(notices.join('\n'), false);
   })

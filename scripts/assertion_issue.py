@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate or apply an assertion submitted as a GitHub issue.
+"""Validate or apply assertions submitted as a GitHub issue.
 
 Usage (issue body passed via the ISSUE_BODY env var, safe for untrusted text):
 
@@ -7,17 +7,33 @@ Usage (issue body passed via the ISSUE_BODY env var, safe for untrusted text):
   python scripts/assertion_issue.py apply      # save to assertions.json
 
 `apply` additionally reads ISSUE_NUMBER and ISSUE_AUTHOR to record provenance
-in the saved note. Prints a markdown comment for the issue on stdout; exits
-non-zero if the assertion is rejected.
+in the saved notes. Prints a markdown comment for the issue on stdout.
+Exit code: validate -> 0 iff every assertion passes; apply -> 0 iff at least
+one assertion was applied.
 
-The expected body is the rendered issue form (.github/ISSUE_TEMPLATE/assertion.yml):
+Two supported body formats:
 
-  ### Statement
-  P8 => ~P32
-  ### Verdict
-  true
-  ### Note
-  reference / justification
+1. The issue form (.github/ISSUE_TEMPLATE/assertion.yml), single assertion:
+
+     ### Statement
+     P8 => ~P32
+     ### Verdict
+     true
+     ### Note
+     reference / justification
+
+2. The website's batch format, any number of assertions:
+
+     statement: P8 => ~P32
+     verdict: true
+     note: reference / justification
+
+     statement: ~P1 => P21
+     verdict: false
+     note: ...
+
+Assertions in a batch are checked sequentially, each against the data plus
+the earlier ones in the same issue.
 """
 
 import io
@@ -32,7 +48,8 @@ import implications
 from implications import CommandError
 
 
-def parse_issue(body):
+def parse_form(body):
+    """The rendered issue-form format -> one (statement, verdict, note)."""
     fields = {}
     current = None
     for line in body.splitlines():
@@ -47,7 +64,25 @@ def parse_issue(body):
         text = "\n".join(fields.get(key, [])).strip()
         return "" if text == "_No response_" else text
 
-    return get("statement"), get("verdict").strip().lower(), get("note")
+    return [(get("statement"), get("verdict").strip().lower(), get("note"))]
+
+
+def parse_batch(body):
+    """statement:/verdict:/note: line groups -> list of (statement, verdict, note)."""
+    items, cur = [], {}
+    for line in body.splitlines():
+        m = re.match(r"\s*(statement|verdict|note)\s*:\s*(.*)", line, re.I)
+        if not m:
+            continue
+        key, value = m.group(1).lower(), m.group(2).strip()
+        if key == "statement" and cur.get("statement"):
+            items.append(cur)
+            cur = {}
+        cur[key] = value
+    if cur.get("statement"):
+        items.append(cur)
+    return [(c.get("statement", ""), c.get("verdict", "").lower(),
+             c.get("note", "")) for c in items]
 
 
 def main():
@@ -56,40 +91,64 @@ def main():
         sys.exit("usage: assertion_issue.py validate|apply")
     body = os.environ.get("ISSUE_BODY", "")
 
-    statement, verdict, note = parse_issue(body)
-    if verdict not in ("true", "false"):
-        print(f"❌ Could not read a `true`/`false` verdict from this issue "
-              f"(got {verdict!r}). Please use the assertion form.")
+    if re.search(r"^###\s+Statement", body, re.M):
+        items = parse_form(body)
+    else:
+        items = parse_batch(body)
+    if not items:
+        print("❌ Could not find any assertion in this issue. Use the "
+              "assertion form or the website's Submit button.")
         sys.exit(1)
-    if mode == "apply":
-        issue = os.environ.get("ISSUE_NUMBER", "?")
-        author = os.environ.get("ISSUE_AUTHOR", "?")
-        note = f"{note} (#{issue}, by @{author})"
 
-    engine = implications.Engine(implications.load_assertions())
+    data = implications.load_data()
+    assertions = implications.load_assertions()
+    engine = implications.Engine(assertions, data)
     if engine.problems:
         print("❌ The repository data is currently inconsistent; "
               "cannot process assertions:\n```\n"
               + "\n".join(engine.problems) + "\n```")
         sys.exit(1)
 
-    log = io.StringIO()
-    try:
-        with redirect_stdout(log):
-            implications.do_assert(engine, statement, verdict, note,
-                                   save=(mode == "apply"))
-    except CommandError as e:
-        print(f"❌ **Rejected**: {e}\n\n```\n{log.getvalue()}```")
-        sys.exit(1)
+    results, ok = [], 0
+    for statement, verdict, note in items:
+        label = f"`{statement or '?'}` is `{verdict or '?'}`"
+        if verdict not in ("true", "false"):
+            results.append(f"❌ {label} — missing or invalid verdict")
+            continue
+        if mode == "apply":
+            issue = os.environ.get("ISSUE_NUMBER", "?")
+            author = os.environ.get("ISSUE_AUTHOR", "?")
+            note = f"{note} (#{issue}, by @{author})"
+        try:
+            with redirect_stdout(io.StringIO()):
+                assertions = implications.do_assert(
+                    engine, statement, verdict, note, save=(mode == "apply"))
+            engine = implications.Engine(assertions, data)
+            ok += 1
+            results.append(f"✅ {label} — passes all consistency checks"
+                           + (" (applied)" if mode == "apply" else ""))
+        except CommandError as e:
+            results.append(f"❌ {label} — {e}")
 
+    plural = "assertion" if len(items) == 1 else f"{len(items)} assertions"
     if mode == "validate":
-        print(f"✅ **`{statement}` is `{verdict}`** passes all consistency "
-              f"checks against the current data.\n\n```\n{log.getvalue()}```\n"
-              f"A maintainer can accept it by adding the `approved` label.")
+        print(f"Checked {plural} against the current data "
+              f"(theorems, spaces, and accepted assertions):\n")
+        print("\n".join(f"- {r}" for r in results))
+        if ok == len(items):
+            print("\nA maintainer can accept by adding the `approved` label.")
+        else:
+            print(f"\n{len(items) - ok} of {len(items)} rejected — please "
+                  f"edit the issue to fix or remove the rejected ones.")
+        sys.exit(0 if ok == len(items) else 1)
     else:
-        print(f"✅ Accepted **`{statement}` is `{verdict}`** — saved to "
-              f"`assertions.json`.\n\n```\n{log.getvalue()}```\n"
-              f"The website will update in a couple of minutes.")
+        print(f"Processed {plural}:\n")
+        print("\n".join(f"- {r}" for r in results))
+        if ok:
+            print(f"\nSaved {ok} assertion{'s' if ok != 1 else ''} to "
+                  f"`assertions.json` — the website will update in a couple "
+                  f"of minutes.")
+        sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":

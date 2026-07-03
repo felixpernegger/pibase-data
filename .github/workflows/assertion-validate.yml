@@ -9,7 +9,11 @@ permissions:
 
 jobs:
   validate:
-    if: contains(github.event.issue.labels.*.name, 'assertion')
+    # the website's batch issues can't self-apply labels (visitors lack triage
+    # rights), so also match on the title prefix and label the issue ourselves
+    if: >
+      contains(github.event.issue.labels.*.name, 'assertion') ||
+      startsWith(github.event.issue.title, '[assertion')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,6 +42,7 @@ jobs:
         run: |
           gh label create valid   -R "$REPO" -c 2da44e -d "assertion passes consistency checks" --force
           gh label create invalid -R "$REPO" -c cf222e -d "assertion rejected by consistency checks" --force
+          gh issue edit "$NUMBER" -R "$REPO" --add-label assertion || true
           gh issue comment "$NUMBER" -R "$REPO" --body-file comment.md
           if [ "$VALID" = "true" ]; then
             gh issue edit "$NUMBER" -R "$REPO" --add-label valid --remove-label invalid || true
