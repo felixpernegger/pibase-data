@@ -258,5 +258,18 @@
     "holds": false,
     "note": "komlo quotient",
     "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000001",
+      "value": false
+    },
+    "then": {
+      "property": "P000021",
+      "value": true
+    },
+    "holds": false,
+    "note": "pipeline test — will be reverted (#1, by @felixpernegger)",
+    "date": "2026-07-03"
   }
 ]
