@@ -17,7 +17,9 @@ assertions.json next to this script:
 
 Commands:
   status  "A => B"              show what pi-base (+ your assertions) knows
-  assert  "A => B" true|false   record your knowledge (checked for consistency)
+  assert  "A => B" true|false --note "..."
+                                record your knowledge (note required;
+                                checked for consistency)
   list                          show saved assertions
   remove  N                     delete assertion #N
   unknown                       regenerate unknown_pairs.csv with assertions
@@ -186,6 +188,11 @@ def do_status(engine, statement_text):
 def do_assert(engine, statement_text, verdict, note):
     """Save an assertion. Returns the new assertions list (caller rebuilds)."""
     holds = {"true": True, "false": False}[verdict]
+    if not note.strip():
+        raise CommandError(
+            "a note (reference / justification) is required — "
+            "add it after true/false")
+    note = note.strip()
     stmt = parse_statement(statement_text, engine.props)
     (ua, va), (ub, vb) = stmt
 
@@ -289,7 +296,7 @@ def do_random(engine, interactive=False):
     ua, va = engine.prover.unlit(a)
     ub, vb = engine.prover.unlit(b)
     stmt = ((ua, va), (ub, vb))
-    hint = ("reply 'true' or 'false' (+ optional note) to save, "
+    hint = ("reply 'true NOTE' or 'false NOTE' to save, "
             "or 'random' for another" if interactive
             else f"settle it with: assert {short_statement(stmt)} true|false")
     print(f"{fmt_statement(engine.props, stmt)}\n  UNKNOWN — {hint}")
@@ -311,13 +318,13 @@ def do_find(engine, text):
 REPL_HELP = """\
 commands:
   status A => B                what is known about the implication
-  assert A => B true|false [note ...]
-                               record your knowledge (note may be free text)
+  assert A => B true|false NOTE ...
+                               record your knowledge (note is required free text)
   list                         show saved assertions
   remove N                     delete assertion #N
   unknown                      regenerate unknown_pairs.csv
   random                       show a random unknown implication;
-                               then just 'true [note ...]' or 'false [note ...]'
+                               then just 'true NOTE ...' or 'false NOTE ...'
                                saves your verdict for it
   find TEXT                    look up property uids by name
   help                         this message

@@ -1,69 +1,34 @@
 antecedent_uid,antecedent_value,antecedent_name,consequent_uid,consequent_value,consequent_name
-P000001,false,$T_0$,P000018,true,Lindelöf
 P000001,false,$T_0$,P000021,true,Weakly countably compact
 P000001,false,$T_0$,P000029,true,Countable chain condition
 P000001,false,$T_0$,P000041,true,Locally connected
-P000001,false,$T_0$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000001,false,$T_0$,P000061,true,Cozero complemented
 P000001,false,$T_0$,P000062,true,Weakly Lindelöf
-P000001,false,$T_0$,P000066,true,Menger
-P000001,false,$T_0$,P000069,true,Strategic Menger
-P000001,false,$T_0$,P000072,true,2-Markov Menger
 P000001,false,$T_0$,P000083,true,Meta-Lindelöf
 P000001,false,$T_0$,P000105,true,Para-Lindelöf
-P000001,false,$T_0$,P000128,true,$k$-Lindelöf
-P000001,false,$T_0$,P000131,true,Hereditarily Lindelöf
-P000001,false,$T_0$,P000149,true,$\omega$-Lindelöf
-P000001,false,$T_0$,P000153,true,$\omega$-Menger
-P000001,false,$T_0$,P000156,true,$k$-Rothberger
-P000001,false,$T_0$,P000157,true,Strategically $k$-Rothberger
-P000001,false,$T_0$,P000159,true,$k$-Menger
-P000001,false,$T_0$,P000160,true,Strategically $k$-Menger
-P000001,false,$T_0$,P000163,true,Cardinality $\leq\mathfrak c$
 P000001,false,$T_0$,P000172,true,Radial
 P000001,false,$T_0$,P000173,true,Pseudoradial
-P000001,false,$T_0$,P000174,true,Well-based
 P000001,false,$T_0$,P000197,true,Has countable spread
 P000001,false,$T_0$,P000198,true,Has countable extent
-P000001,false,$T_0$,P000209,true,Density $\leq\mathfrak c$
-P000001,false,$T_0$,P000210,true,$\alpha_1$
-P000001,false,$T_0$,P000211,true,$\alpha_{1.5}$
-P000001,false,$T_0$,P000212,true,$\alpha_2$
-P000001,false,$T_0$,P000213,true,$\alpha_3$
-P000001,false,$T_0$,P000214,true,$\alpha_4$
 P000001,false,$T_0$,P000229,true,Semilocally simply connected
 P000001,false,$T_0$,P000234,true,Has open connected components
 P000001,false,$T_0$,P000244,true,Has countable $\pi$-character
 P000002,false,$T_1$,P000061,true,Cozero complemented
 P000002,false,$T_1$,P000172,true,Radial
 P000002,false,$T_1$,P000173,true,Pseudoradial
-P000002,false,$T_1$,P000174,true,Well-based
-P000002,false,$T_1$,P000209,true,Density $\leq\mathfrak c$
-P000002,false,$T_1$,P000210,true,$\alpha_1$
-P000002,false,$T_1$,P000211,true,$\alpha_{1.5}$
-P000002,false,$T_1$,P000212,true,$\alpha_2$
-P000002,false,$T_1$,P000213,true,$\alpha_3$
-P000002,false,$T_1$,P000214,true,$\alpha_4$
 P000002,false,$T_1$,P000229,true,Semilocally simply connected
 P000002,false,$T_1$,P000234,true,Has open connected components
 P000002,false,$T_1$,P000244,true,Has countable $\pi$-character
-P000003,false,$T_2$,P000209,true,Density $\leq\mathfrak c$
 P000003,false,$T_2$,P000229,true,Semilocally simply connected
-P000004,false,$T_{2 \frac{1}{2}}$,P000209,true,Density $\leq\mathfrak c$
 P000004,false,$T_{2 \frac{1}{2}}$,P000229,true,Semilocally simply connected
-P000005,false,$T_3$,P000209,true,Density $\leq\mathfrak c$
 P000005,false,$T_3$,P000229,true,Semilocally simply connected
-P000006,false,$T_{3 \frac{1}{2}}$,P000209,true,Density $\leq\mathfrak c$
 P000006,false,$T_{3 \frac{1}{2}}$,P000229,true,Semilocally simply connected
-P000007,false,$T_4$,P000209,true,Density $\leq\mathfrak c$
 P000007,false,$T_4$,P000229,true,Semilocally simply connected
 P000008,true,$T_5$,P000032,true,Countably paracompact
 P000008,true,$T_5$,P000033,true,Countably metacompact
 P000008,true,$T_5$,P000127,false,Dowker
 P000008,true,$T_5$,P000193,true,Shrinking
-P000008,false,$T_5$,P000209,true,Density $\leq\mathfrak c$
 P000008,false,$T_5$,P000229,true,Semilocally simply connected
-P000009,false,Functionally Hausdorff,P000209,true,Density $\leq\mathfrak c$
 P000009,false,Functionally Hausdorff,P000229,true,Semilocally simply connected
 P000010,true,Semiregular,P000192,true,Quasi-sober
 P000010,false,Semiregular,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
@@ -73,14 +38,11 @@ P000011,false,Regular,P000209,true,Density $\leq\mathfrak c$
 P000011,false,Regular,P000229,true,Semilocally simply connected
 P000012,false,Completely regular,P000209,true,Density $\leq\mathfrak c$
 P000012,false,Completely regular,P000229,true,Semilocally simply connected
-P000013,false,Normal,P000175,true,Cardinality $\geq 3$
 P000013,false,Normal,P000209,true,Density $\leq\mathfrak c$
 P000013,false,Normal,P000229,true,Semilocally simply connected
 P000014,true,Completely normal,P000127,false,Dowker
-P000014,false,Completely normal,P000175,true,Cardinality $\geq 3$
 P000014,false,Completely normal,P000209,true,Density $\leq\mathfrak c$
 P000014,false,Completely normal,P000229,true,Semilocally simply connected
-P000015,true,Perfectly normal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000015,true,Perfectly normal,P000081,true,Countably tight
 P000015,true,Perfectly normal,P000083,true,Meta-Lindelöf
 P000015,true,Perfectly normal,P000088,true,Collectionwise normal
@@ -92,53 +54,38 @@ P000015,true,Perfectly normal,P000194,true,Submetacompact
 P000015,true,Perfectly normal,P000207,true,Strongly collectionwise normal
 P000015,false,Perfectly normal,P000209,true,Density $\leq\mathfrak c$
 P000015,false,Perfectly normal,P000229,true,Semilocally simply connected
-P000016,true,Compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000016,true,Compact,P000209,true,Density $\leq\mathfrak c$
 P000016,false,Compact,P000229,true,Semilocally simply connected
-P000017,true,$\sigma$-compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000017,true,$\sigma$-compact,P000128,true,$k$-Lindelöf
 P000017,true,$\sigma$-compact,P000209,true,Density $\leq\mathfrak c$
 P000017,false,$\sigma$-compact,P000229,true,Semilocally simply connected
-P000018,true,Lindelöf,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000018,true,Lindelöf,P000209,true,Density $\leq\mathfrak c$
 P000018,false,Lindelöf,P000229,true,Semilocally simply connected
-P000019,true,Countably compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000019,true,Countably compact,P000140,true,$k_1$-space
 P000019,true,Countably compact,P000209,true,Density $\leq\mathfrak c$
 P000019,false,Countably compact,P000229,true,Semilocally simply connected
-P000020,true,Sequentially compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000020,true,Sequentially compact,P000140,true,$k_1$-space
-P000020,true,Sequentially compact,P000163,true,Cardinality $\leq\mathfrak c$
 P000020,true,Sequentially compact,P000209,true,Density $\leq\mathfrak c$
 P000020,false,Sequentially compact,P000229,true,Semilocally simply connected
-P000021,true,Weakly countably compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000021,true,Weakly countably compact,P000209,true,Density $\leq\mathfrak c$
 P000021,false,Weakly countably compact,P000229,true,Semilocally simply connected
-P000022,true,Pseudocompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000022,true,Pseudocompact,P000209,true,Density $\leq\mathfrak c$
 P000022,false,Pseudocompact,P000229,true,Semilocally simply connected
-P000023,true,Weakly locally compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000023,true,Weakly locally compact,P000127,false,Dowker
 P000023,false,Weakly locally compact,P000135,true,$R_0$
 P000023,false,Weakly locally compact,P000209,true,Density $\leq\mathfrak c$
 P000023,false,Weakly locally compact,P000229,true,Semilocally simply connected
 P000024,true,Locally relatively compact,P000033,true,Countably metacompact
-P000024,true,Locally relatively compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000024,true,Locally relatively compact,P000127,false,Dowker
 P000024,false,Locally relatively compact,P000209,true,Density $\leq\mathfrak c$
 P000024,false,Locally relatively compact,P000229,true,Semilocally simply connected
-P000025,true,Exhaustible by compacts,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000025,true,Exhaustible by compacts,P000209,true,Density $\leq\mathfrak c$
 P000025,false,Exhaustible by compacts,P000229,true,Semilocally simply connected
-P000026,true,Separable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000026,true,Separable,P000061,true,Cozero complemented
 P000026,true,Separable,P000127,false,Dowker
 P000026,false,Separable,P000229,true,Semilocally simply connected
-P000027,true,Second countable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000027,true,Second countable,P000061,true,Cozero complemented
-P000027,true,Second countable,P000163,true,Cardinality $\leq\mathfrak c$
 P000027,false,Second countable,P000229,true,Semilocally simply connected
-P000028,true,First countable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000028,true,First countable,P000127,false,Dowker
 P000028,false,First countable,P000135,true,$R_0$
 P000028,false,First countable,P000209,true,Density $\leq\mathfrak c$
@@ -146,12 +93,9 @@ P000028,false,First countable,P000229,true,Semilocally simply connected
 P000029,true,Countable chain condition,P000061,true,Cozero complemented
 P000029,true,Countable chain condition,P000127,false,Dowker
 P000029,true,Countable chain condition,P000209,true,Density $\leq\mathfrak c$
-P000029,false,Countable chain condition,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000029,false,Countable chain condition,P000229,true,Semilocally simply connected
-P000030,true,Paracompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000030,false,Paracompact,P000209,true,Density $\leq\mathfrak c$
 P000030,false,Paracompact,P000229,true,Semilocally simply connected
-P000031,true,Metacompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000031,false,Metacompact,P000061,true,Cozero complemented
 P000031,false,Metacompact,P000209,true,Density $\leq\mathfrak c$
 P000031,false,Metacompact,P000229,true,Semilocally simply connected
@@ -172,29 +116,20 @@ P000033,false,Countably metacompact,P000213,true,$\alpha_3$
 P000033,false,Countably metacompact,P000214,true,$\alpha_4$
 P000033,false,Countably metacompact,P000229,true,Semilocally simply connected
 P000033,false,Countably metacompact,P000244,true,Has countable $\pi$-character
-P000034,true,Fully normal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000034,false,Fully normal,P000175,true,Cardinality $\geq 3$
 P000034,false,Fully normal,P000209,true,Density $\leq\mathfrak c$
 P000034,false,Fully normal,P000229,true,Semilocally simply connected
-P000035,true,Fully $T_4$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000035,true,Fully $T_4$,P000162,true,Realcompact
-P000035,false,Fully $T_4$,P000209,true,Density $\leq\mathfrak c$
 P000035,false,Fully $T_4$,P000229,true,Semilocally simply connected
-P000036,true,Connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000036,true,Connected,P000127,false,Dowker
 P000036,true,Connected,P000209,true,Density $\leq\mathfrak c$
 P000036,false,Connected,P000229,true,Semilocally simply connected
-P000037,true,Path connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000037,true,Path connected,P000127,false,Dowker
 P000037,true,Path connected,P000209,true,Density $\leq\mathfrak c$
 P000037,false,Path connected,P000229,true,Semilocally simply connected
-P000038,true,Injectively path connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000038,true,Injectively path connected,P000114,false,Cardinality $=\aleph_1$
 P000038,true,Injectively path connected,P000127,false,Dowker
 P000038,true,Injectively path connected,P000209,true,Density $\leq\mathfrak c$
 P000038,false,Injectively path connected,P000229,true,Semilocally simply connected
-P000039,true,Hyperconnected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000039,true,Hyperconnected,P000163,true,Cardinality $\leq\mathfrak c$
 P000039,true,Hyperconnected,P000205,false,Cut point space
 P000039,true,Hyperconnected,P000209,true,Density $\leq\mathfrak c$
 P000039,true,Hyperconnected,P000210,true,$\alpha_1$
@@ -205,14 +140,12 @@ P000039,true,Hyperconnected,P000214,true,$\alpha_4$
 P000039,true,Hyperconnected,P000229,true,Semilocally simply connected
 P000040,true,Ultraconnected,P000023,true,Weakly locally compact
 P000040,true,Ultraconnected,P000028,true,First countable
-P000040,true,Ultraconnected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000040,true,Ultraconnected,P000062,true,Weakly Lindelöf
 P000040,true,Ultraconnected,P000079,true,Sequential
 P000040,true,Ultraconnected,P000080,true,Fréchet Urysohn
 P000040,true,Ultraconnected,P000081,true,Countably tight
 P000040,true,Ultraconnected,P000140,true,$k_1$-space
 P000040,true,Ultraconnected,P000141,true,$k_2$-space
-P000040,true,Ultraconnected,P000163,true,Cardinality $\leq\mathfrak c$
 P000040,true,Ultraconnected,P000172,true,Radial
 P000040,true,Ultraconnected,P000173,true,Pseudoradial
 P000040,true,Ultraconnected,P000174,true,Well-based
@@ -230,21 +163,17 @@ P000040,true,Ultraconnected,P000229,true,Semilocally simply connected
 P000040,true,Ultraconnected,P000231,true,Weakly locally simply connected
 P000040,true,Ultraconnected,P000239,true,Semilocally contractible
 P000040,true,Ultraconnected,P000244,true,Has countable $\pi$-character
-P000041,true,Locally connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000041,true,Locally connected,P000127,false,Dowker
 P000041,false,Locally connected,P000073,true,Sober
 P000041,false,Locally connected,P000107,true,Has a closed point
 P000041,false,Locally connected,P000192,true,Quasi-sober
 P000041,false,Locally connected,P000209,true,Density $\leq\mathfrak c$
 P000041,false,Locally connected,P000229,true,Semilocally simply connected
-P000042,true,Locally path connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000042,true,Locally path connected,P000061,true,Cozero complemented
 P000042,true,Locally path connected,P000127,false,Dowker
 P000042,false,Locally path connected,P000209,true,Density $\leq\mathfrak c$
 P000042,false,Locally path connected,P000229,true,Semilocally simply connected
-P000043,true,Locally injectively path connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000043,true,Locally injectively path connected,P000061,true,Cozero complemented
-P000043,true,Locally injectively path connected,P000114,false,Cardinality $=\aleph_1$
 P000043,true,Locally injectively path connected,P000127,false,Dowker
 P000043,true,Locally injectively path connected,P000203,false,Almost discrete
 P000043,false,Locally injectively path connected,P000209,true,Density $\leq\mathfrak c$
@@ -278,10 +207,6 @@ P000045,true,Has a dispersion point,P000205,false,Cut point space
 P000045,true,Has a dispersion point,P000209,true,Density $\leq\mathfrak c$
 P000045,true,Has a dispersion point,P000229,true,Semilocally simply connected
 P000045,true,Has a dispersion point,P000244,true,Has countable $\pi$-character
-P000046,false,Totally path disconnected,P000209,true,Density $\leq\mathfrak c$
-P000047,false,Totally disconnected,P000209,true,Density $\leq\mathfrak c$
-P000048,false,Totally separated,P000209,true,Density $\leq\mathfrak c$
-P000049,true,Extremally disconnected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000049,true,Extremally disconnected,P000127,false,Dowker
 P000049,true,Extremally disconnected,P000205,false,Cut point space
 P000049,true,Extremally disconnected,P000210,true,$\alpha_1$
@@ -290,40 +215,28 @@ P000049,true,Extremally disconnected,P000212,true,$\alpha_2$
 P000049,true,Extremally disconnected,P000213,true,$\alpha_3$
 P000049,true,Extremally disconnected,P000214,true,$\alpha_4$
 P000049,true,Extremally disconnected,P000229,true,Semilocally simply connected
-P000049,false,Extremally disconnected,P000175,true,Cardinality $\geq 3$
 P000049,false,Extremally disconnected,P000192,true,Quasi-sober
 P000049,false,Extremally disconnected,P000209,true,Density $\leq\mathfrak c$
 P000050,true,Zero dimensional,P000204,false,Has a cut point
 P000050,true,Zero dimensional,P000217,true,Strongly zero-dimensional
 P000050,true,Zero dimensional,P000229,true,Semilocally simply connected
 P000050,false,Zero dimensional,P000209,true,Density $\leq\mathfrak c$
-P000051,true,Scattered,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000051,true,Scattered,P000127,false,Dowker
 P000051,true,Scattered,P000229,true,Semilocally simply connected
-P000051,false,Scattered,P000209,true,Density $\leq\mathfrak c$
-P000052,true,Discrete,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000052,true,Discrete,P000114,false,Cardinality $=\aleph_1$
 P000052,true,Discrete,P000162,true,Realcompact
 P000052,true,Discrete,P000215,true,Hereditarily realcompact
-P000052,false,Discrete,P000209,true,Density $\leq\mathfrak c$
-P000053,true,Metrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000053,true,Metrizable,P000162,true,Realcompact
 P000053,true,Metrizable,P000186,true,Embeds in a topological $W$-group
 P000053,true,Metrizable,P000215,true,Hereditarily realcompact
-P000053,false,Metrizable,P000209,true,Density $\leq\mathfrak c$
 P000053,false,Metrizable,P000229,true,Semilocally simply connected
-P000054,true,Has a $\sigma$-locally finite base,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000054,true,Has a $\sigma$-locally finite base,P000061,true,Cozero complemented
 P000054,true,Has a $\sigma$-locally finite base,P000083,true,Meta-Lindelöf
 P000054,true,Has a $\sigma$-locally finite base,P000105,true,Para-Lindelöf
 P000054,false,Has a $\sigma$-locally finite base,P000209,true,Density $\leq\mathfrak c$
 P000054,false,Has a $\sigma$-locally finite base,P000229,true,Semilocally simply connected
-P000055,true,Completely metrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000055,true,Completely metrizable,P000114,false,Cardinality $=\aleph_1$
 P000055,true,Completely metrizable,P000162,true,Realcompact
 P000055,true,Completely metrizable,P000186,true,Embeds in a topological $W$-group
 P000055,true,Completely metrizable,P000215,true,Hereditarily realcompact
-P000055,false,Completely metrizable,P000209,true,Density $\leq\mathfrak c$
 P000055,false,Completely metrizable,P000229,true,Semilocally simply connected
 P000056,true,Meager,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000056,true,Meager,P000061,true,Cozero complemented
@@ -382,24 +295,17 @@ P000058,true,Cardinality $\lt\mathfrak c$,P000243,true,Has countable $\pi$-weigh
 P000058,true,Cardinality $\lt\mathfrak c$,P000244,true,Has countable $\pi$-character
 P000059,true,Cardinality $\leq 2^{\mathfrak c}$,P000127,false,Dowker
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000061,true,Cozero complemented
-P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000062,true,Weakly Lindelöf
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000064,true,Baire
-P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000073,true,Sober
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000083,true,Meta-Lindelöf
-P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000107,true,Has a closed point
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000115,true,Subparacompact
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000165,true,Pseudonormal
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000173,true,Pseudoradial
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000192,true,Quasi-sober
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000194,true,Submetacompact
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000206,true,Strongly Choquet
-P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000209,true,Density $\leq\mathfrak c$
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000217,true,Strongly zero-dimensional
-P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000227,true,Has a discrete closed subset of size $\mathfrak c$
 P000059,false,Cardinality $\leq 2^{\mathfrak c}$,P000229,true,Semilocally simply connected
-P000060,true,Strongly connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000060,true,Strongly connected,P000062,true,Weakly Lindelöf
-P000060,true,Strongly connected,P000163,true,Cardinality $\leq\mathfrak c$
 P000060,true,Strongly connected,P000209,true,Density $\leq\mathfrak c$
 P000060,true,Strongly connected,P000229,true,Semilocally simply connected
 P000061,false,Cozero complemented,P000064,true,Baire
@@ -433,9 +339,7 @@ P000062,false,Weakly Lindelöf,P000165,true,Pseudonormal
 P000062,false,Weakly Lindelöf,P000173,true,Pseudoradial
 P000062,false,Weakly Lindelöf,P000229,true,Semilocally simply connected
 P000063,true,Čech complete,P000033,true,Countably metacompact
-P000063,true,Čech complete,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000063,true,Čech complete,P000127,false,Dowker
-P000063,false,Čech complete,P000209,true,Density $\leq\mathfrak c$
 P000063,false,Čech complete,P000229,true,Semilocally simply connected
 P000064,true,Baire,P000127,false,Dowker
 P000064,true,Baire,P000206,true,Strongly Choquet
@@ -450,13 +354,11 @@ P000065,true,Cardinality $=\mathfrak c$,P000119,false,Stonean
 P000065,true,Cardinality $=\mathfrak c$,P000127,false,Dowker
 P000065,true,Cardinality $=\mathfrak c$,P000190,false,Ordinal space
 P000065,false,Cardinality $=\mathfrak c$,P000229,true,Semilocally simply connected
-P000066,true,Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000066,true,Menger,P000128,true,$k$-Lindelöf
 P000066,true,Menger,P000149,true,$\omega$-Lindelöf
 P000066,true,Menger,P000153,true,$\omega$-Menger
 P000066,true,Menger,P000209,true,Density $\leq\mathfrak c$
 P000066,false,Menger,P000229,true,Semilocally simply connected
-P000067,true,$T_6$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000067,true,$T_6$,P000081,true,Countably tight
 P000067,true,$T_6$,P000083,true,Meta-Lindelöf
 P000067,true,$T_6$,P000088,true,Collectionwise normal
@@ -469,43 +371,29 @@ P000067,true,$T_6$,P000193,true,Shrinking
 P000067,true,$T_6$,P000194,true,Submetacompact
 P000067,true,$T_6$,P000207,true,Strongly collectionwise normal
 P000067,true,$T_6$,P000215,true,Hereditarily realcompact
-P000067,false,$T_6$,P000209,true,Density $\leq\mathfrak c$
 P000067,false,$T_6$,P000229,true,Semilocally simply connected
-P000068,true,Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000068,true,Rothberger,P000128,true,$k$-Lindelöf
 P000068,true,Rothberger,P000149,true,$\omega$-Lindelöf
 P000068,true,Rothberger,P000153,true,$\omega$-Menger
-P000068,true,Rothberger,P000163,true,Cardinality $\leq\mathfrak c$
 P000068,true,Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000068,true,Rothberger,P000217,true,Strongly zero-dimensional
 P000068,true,Rothberger,P000229,true,Semilocally simply connected
-P000069,true,Strategic Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000069,true,Strategic Menger,P000072,true,2-Markov Menger
 P000069,true,Strategic Menger,P000128,true,$k$-Lindelöf
 P000069,true,Strategic Menger,P000209,true,Density $\leq\mathfrak c$
 P000069,false,Strategic Menger,P000229,true,Semilocally simply connected
-P000070,true,Markov Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000070,true,Markov Menger,P000128,true,$k$-Lindelöf
 P000070,true,Markov Menger,P000209,true,Density $\leq\mathfrak c$
 P000070,false,Markov Menger,P000229,true,Semilocally simply connected
-P000071,true,$\sigma$-relatively-compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000071,true,$\sigma$-relatively-compact,P000128,true,$k$-Lindelöf
 P000071,true,$\sigma$-relatively-compact,P000209,true,Density $\leq\mathfrak c$
 P000071,false,$\sigma$-relatively-compact,P000229,true,Semilocally simply connected
-P000072,true,2-Markov Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000072,true,2-Markov Menger,P000128,true,$k$-Lindelöf
 P000072,true,2-Markov Menger,P000209,true,Density $\leq\mathfrak c$
 P000072,false,2-Markov Menger,P000229,true,Semilocally simply connected
 P000073,false,Sober,P000083,true,Meta-Lindelöf
 P000073,false,Sober,P000105,true,Para-Lindelöf
-P000073,false,Sober,P000163,true,Cardinality $\leq\mathfrak c$
 P000073,false,Sober,P000198,true,Has countable extent
-P000073,false,Sober,P000209,true,Density $\leq\mathfrak c$
-P000073,false,Sober,P000210,true,$\alpha_1$
-P000073,false,Sober,P000211,true,$\alpha_{1.5}$
-P000073,false,Sober,P000212,true,$\alpha_2$
-P000073,false,Sober,P000213,true,$\alpha_3$
-P000073,false,Sober,P000214,true,$\alpha_4$
 P000073,false,Sober,P000229,true,Semilocally simply connected
 P000073,false,Sober,P000234,true,Has open connected components
 P000074,true,Cosmic,P000128,true,$k$-Lindelöf
@@ -524,7 +412,6 @@ P000075,true,Spectral,P000214,true,$\alpha_4$
 P000075,true,Spectral,P000217,true,Strongly zero-dimensional
 P000075,true,Spectral,P000229,true,Semilocally simply connected
 P000076,true,Proximal,P000014,true,Completely normal
-P000076,true,Proximal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000076,true,Proximal,P000108,true,Hereditarily collectionwise normal
 P000076,true,Proximal,P000186,true,Embeds in a topological $W$-group
 P000076,true,Proximal,P000193,true,Shrinking
@@ -544,35 +431,27 @@ P000077,true,Corson compact,P000209,true,Density $\leq\mathfrak c$
 P000077,true,Corson compact,P000215,true,Hereditarily realcompact
 P000077,true,Corson compact,P000216,true,Hereditarily paracompact
 P000077,false,Corson compact,P000229,true,Semilocally simply connected
-P000079,true,Sequential,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000079,true,Sequential,P000127,false,Dowker
 P000079,false,Sequential,P000135,true,$R_0$
 P000079,false,Sequential,P000209,true,Density $\leq\mathfrak c$
 P000079,false,Sequential,P000229,true,Semilocally simply connected
-P000080,true,Fréchet Urysohn,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000080,true,Fréchet Urysohn,P000127,false,Dowker
 P000080,false,Fréchet Urysohn,P000135,true,$R_0$
 P000080,false,Fréchet Urysohn,P000209,true,Density $\leq\mathfrak c$
 P000080,false,Fréchet Urysohn,P000229,true,Semilocally simply connected
-P000081,true,Countably tight,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000081,true,Countably tight,P000127,false,Dowker
 P000081,false,Countably tight,P000135,true,$R_0$
 P000081,false,Countably tight,P000206,true,Strongly Choquet
 P000081,false,Countably tight,P000209,true,Density $\leq\mathfrak c$
 P000081,false,Countably tight,P000229,true,Semilocally simply connected
-P000082,true,Locally metrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000082,true,Locally metrizable,P000061,true,Cozero complemented
 P000082,true,Locally metrizable,P000127,false,Dowker
-P000082,false,Locally metrizable,P000209,true,Density $\leq\mathfrak c$
 P000082,false,Locally metrizable,P000229,true,Semilocally simply connected
-P000083,true,Meta-Lindelöf,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000083,true,Meta-Lindelöf,P000127,false,Dowker
 P000083,false,Meta-Lindelöf,P000192,true,Quasi-sober
 P000083,false,Meta-Lindelöf,P000209,true,Density $\leq\mathfrak c$
 P000083,false,Meta-Lindelöf,P000229,true,Semilocally simply connected
-P000084,false,Locally Hausdorff,P000209,true,Density $\leq\mathfrak c$
 P000084,false,Locally Hausdorff,P000229,true,Semilocally simply connected
-P000085,true,Basically disconnected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000085,true,Basically disconnected,P000229,true,Semilocally simply connected
 P000085,false,Basically disconnected,P000135,true,$R_0$
 P000085,false,Basically disconnected,P000192,true,Quasi-sober
@@ -589,8 +468,6 @@ P000087,true,Has a group topology,P000165,true,Pseudonormal
 P000087,true,Has a group topology,P000194,true,Submetacompact
 P000087,true,Has a group topology,P000229,true,Semilocally simply connected
 P000087,false,Has a group topology,P000209,true,Density $\leq\mathfrak c$
-P000088,true,Collectionwise normal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000088,false,Collectionwise normal,P000175,true,Cardinality $\geq 3$
 P000088,false,Collectionwise normal,P000209,true,Density $\leq\mathfrak c$
 P000088,false,Collectionwise normal,P000229,true,Semilocally simply connected
 P000089,true,Fixed point property,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
@@ -598,7 +475,6 @@ P000089,true,Fixed point property,P000107,true,Has a closed point
 P000089,true,Fixed point property,P000127,false,Dowker
 P000089,true,Fixed point property,P000209,true,Density $\leq\mathfrak c$
 P000089,true,Fixed point property,P000229,true,Semilocally simply connected
-P000090,true,Alexandrov,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000090,false,Alexandrov,P000209,true,Density $\leq\mathfrak c$
 P000091,true,Eberlein compact,P000008,true,$T_5$
 P000091,true,Eberlein compact,P000014,true,Completely normal
@@ -616,14 +492,11 @@ P000092,true,"$k_{\omega,3}$-space",P000064,true,Baire
 P000092,true,"$k_{\omega,3}$-space",P000206,true,Strongly Choquet
 P000092,true,"$k_{\omega,3}$-space",P000209,true,Density $\leq\mathfrak c$
 P000092,false,"$k_{\omega,3}$-space",P000229,true,Semilocally simply connected
-P000093,true,Locally countable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000093,true,Locally countable,P000061,true,Cozero complemented
 P000093,true,Locally countable,P000127,false,Dowker
 P000093,true,Locally countable,P000229,true,Semilocally simply connected
 P000093,true,Locally countable,P000244,true,Has countable $\pi$-character
 P000093,false,Locally countable,P000209,true,Density $\leq\mathfrak c$
-P000094,true,Locally finite,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000094,true,Locally finite,P000114,false,Cardinality $=\aleph_1$
 P000094,false,Locally finite,P000209,true,Density $\leq\mathfrak c$
 P000095,true,Arc connected,P000033,true,Countably metacompact
 P000095,true,Arc connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
@@ -631,45 +504,28 @@ P000095,true,Arc connected,P000114,false,Cardinality $=\aleph_1$
 P000095,true,Arc connected,P000127,false,Dowker
 P000095,true,Arc connected,P000209,true,Density $\leq\mathfrak c$
 P000095,false,Arc connected,P000229,true,Semilocally simply connected
-P000096,true,Locally arc connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000096,true,Locally arc connected,P000061,true,Cozero complemented
 P000096,true,Locally arc connected,P000073,true,Sober
 P000096,true,Locally arc connected,P000084,true,Locally Hausdorff
-P000096,true,Locally arc connected,P000114,false,Cardinality $=\aleph_1$
 P000096,true,Locally arc connected,P000127,false,Dowker
 P000096,true,Locally arc connected,P000192,true,Quasi-sober
-P000096,false,Locally arc connected,P000209,true,Density $\leq\mathfrak c$
 P000096,false,Locally arc connected,P000229,true,Semilocally simply connected
 P000097,true,Embeddable in $\mathbb R$,P000120,true,Locally orderable
-P000098,true,"$k_{\omega,1}$-space",P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000098,true,"$k_{\omega,1}$-space",P000209,true,Density $\leq\mathfrak c$
 P000098,false,"$k_{\omega,1}$-space",P000229,true,Semilocally simply connected
 P000099,false,US,P000172,true,Radial
 P000099,false,US,P000173,true,Pseudoradial
-P000099,false,US,P000209,true,Density $\leq\mathfrak c$
-P000099,false,US,P000210,true,$\alpha_1$
-P000099,false,US,P000211,true,$\alpha_{1.5}$
-P000099,false,US,P000212,true,$\alpha_2$
-P000099,false,US,P000213,true,$\alpha_3$
-P000099,false,US,P000214,true,$\alpha_4$
 P000099,false,US,P000229,true,Semilocally simply connected
-P000100,false,KC,P000209,true,Density $\leq\mathfrak c$
 P000100,false,KC,P000229,true,Semilocally simply connected
-P000101,false,Has closed retracts,P000209,true,Density $\leq\mathfrak c$
 P000101,false,Has closed retracts,P000229,true,Semilocally simply connected
-P000102,true,Semimetrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000102,true,Semimetrizable,P000061,true,Cozero complemented
 P000102,true,Semimetrizable,P000106,true,Has a $G_\delta$-diagonal
 P000102,true,Semimetrizable,P000115,true,Subparacompact
 P000102,true,Semimetrizable,P000117,true,Has a $\sigma$-locally finite network
 P000102,true,Semimetrizable,P000194,true,Submetacompact
-P000102,false,Semimetrizable,P000209,true,Density $\leq\mathfrak c$
 P000102,false,Semimetrizable,P000229,true,Semilocally simply connected
-P000103,true,Strongly KC,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000103,false,Strongly KC,P000209,true,Density $\leq\mathfrak c$
 P000103,false,Strongly KC,P000229,true,Semilocally simply connected
 P000104,true,Symmetrizable,P000033,true,Countably metacompact
-P000104,true,Symmetrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000104,true,Symmetrizable,P000061,true,Cozero complemented
 P000104,true,Symmetrizable,P000117,true,Has a $\sigma$-locally finite network
 P000104,true,Symmetrizable,P000127,false,Dowker
@@ -679,18 +535,13 @@ P000104,true,Symmetrizable,P000211,true,$\alpha_{1.5}$
 P000104,true,Symmetrizable,P000212,true,$\alpha_2$
 P000104,true,Symmetrizable,P000213,true,$\alpha_3$
 P000104,true,Symmetrizable,P000214,true,$\alpha_4$
-P000104,false,Symmetrizable,P000209,true,Density $\leq\mathfrak c$
 P000104,false,Symmetrizable,P000229,true,Semilocally simply connected
-P000105,true,Para-Lindelöf,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000105,true,Para-Lindelöf,P000127,false,Dowker
 P000105,false,Para-Lindelöf,P000192,true,Quasi-sober
 P000105,false,Para-Lindelöf,P000209,true,Density $\leq\mathfrak c$
 P000105,false,Para-Lindelöf,P000229,true,Semilocally simply connected
-P000106,true,Has a $G_\delta$-diagonal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000106,true,Has a $G_\delta$-diagonal,P000127,false,Dowker
-P000106,false,Has a $G_\delta$-diagonal,P000209,true,Density $\leq\mathfrak c$
 P000106,false,Has a $G_\delta$-diagonal,P000229,true,Semilocally simply connected
-P000107,false,Has a closed point,P000163,true,Cardinality $\leq\mathfrak c$
 P000107,false,Has a closed point,P000172,true,Radial
 P000107,false,Has a closed point,P000173,true,Pseudoradial
 P000107,false,Has a closed point,P000174,true,Well-based
@@ -703,31 +554,22 @@ P000107,false,Has a closed point,P000214,true,$\alpha_4$
 P000107,false,Has a closed point,P000229,true,Semilocally simply connected
 P000107,false,Has a closed point,P000234,true,Has open connected components
 P000107,false,Has a closed point,P000244,true,Has countable $\pi$-character
-P000108,true,Hereditarily collectionwise normal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000108,true,Hereditarily collectionwise normal,P000127,false,Dowker
-P000108,false,Hereditarily collectionwise normal,P000175,true,Cardinality $\geq 3$
 P000108,false,Hereditarily collectionwise normal,P000209,true,Density $\leq\mathfrak c$
 P000108,false,Hereditarily collectionwise normal,P000229,true,Semilocally simply connected
-P000109,true,Monotonically normal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000109,false,Monotonically normal,P000209,true,Density $\leq\mathfrak c$
 P000109,false,Monotonically normal,P000229,true,Semilocally simply connected
-P000110,true,Developable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000110,true,Developable,P000061,true,Cozero complemented
 P000110,true,Developable,P000132,true,$G_\delta$ space
 P000110,false,Developable,P000209,true,Density $\leq\mathfrak c$
 P000110,false,Developable,P000229,true,Semilocally simply connected
-P000111,true,Hemicompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000111,true,Hemicompact,P000209,true,Density $\leq\mathfrak c$
 P000111,false,Hemicompact,P000229,true,Semilocally simply connected
-P000112,true,Submetrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000112,true,Submetrizable,P000103,true,Strongly KC
 P000112,true,Submetrizable,P000127,false,Dowker
-P000112,false,Submetrizable,P000209,true,Density $\leq\mathfrak c$
 P000112,false,Submetrizable,P000229,true,Semilocally simply connected
 P000113,true,Moore space,P000006,true,$T_{3 \frac{1}{2}}$
 P000113,true,Moore space,P000009,true,Functionally Hausdorff
 P000113,true,Moore space,P000012,true,Completely regular
-P000113,true,Moore space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000113,true,Moore space,P000061,true,Cozero complemented
 P000113,true,Moore space,P000082,true,Locally metrizable
 P000113,true,Moore space,P000112,true,Submetrizable
@@ -735,22 +577,16 @@ P000113,true,Moore space,P000144,true,Locally pseudometrizable
 P000113,true,Moore space,P000162,true,Realcompact
 P000113,true,Moore space,P000186,true,Embeds in a topological $W$-group
 P000113,true,Moore space,P000215,true,Hereditarily realcompact
-P000113,false,Moore space,P000209,true,Density $\leq\mathfrak c$
 P000113,false,Moore space,P000229,true,Semilocally simply connected
-P000114,true,Cardinality $=\aleph_1$,P000001,true,$T_0$
 P000114,true,Cardinality $=\aleph_1$,P000033,true,Countably metacompact
 P000114,true,Cardinality $=\aleph_1$,P000064,true,Baire
 P000114,true,Cardinality $=\aleph_1$,P000065,true,Cardinality $=\mathfrak c$
 P000114,true,Cardinality $=\aleph_1$,P000116,false,Polish
 P000114,true,Cardinality $=\aleph_1$,P000119,false,Stonean
-P000114,true,Cardinality $=\aleph_1$,P000122,false,Locally Euclidean
-P000114,true,Cardinality $=\aleph_1$,P000123,false,Locally $n$-Euclidean
 P000114,true,Cardinality $=\aleph_1$,P000124,false,Topological $n$-manifold
 P000114,true,Cardinality $=\aleph_1$,P000127,false,Dowker
-P000114,true,Cardinality $=\aleph_1$,P000129,false,Indiscrete
 P000114,true,Cardinality $=\aleph_1$,P000155,false,Locally $1$-Euclidean
 P000114,true,Cardinality $=\aleph_1$,P000173,true,Pseudoradial
-P000114,true,Cardinality $=\aleph_1$,P000185,false,Partition topology
 P000114,true,Cardinality $=\aleph_1$,P000188,false,Continuum
 P000114,true,Cardinality $=\aleph_1$,P000204,false,Has a cut point
 P000114,true,Cardinality $=\aleph_1$,P000205,false,Cut point space
@@ -764,19 +600,13 @@ P000114,true,Cardinality $=\aleph_1$,P000217,true,Strongly zero-dimensional
 P000114,true,Cardinality $=\aleph_1$,P000222,false,Has a cofinite topology
 P000114,true,Cardinality $=\aleph_1$,P000227,false,Has a discrete closed subset of size $\mathfrak c$
 P000114,true,Cardinality $=\aleph_1$,P000229,true,Semilocally simply connected
-P000114,true,Cardinality $=\aleph_1$,P000235,false,Locally a Euclidean half-space
-P000114,true,Cardinality $=\aleph_1$,P000236,false,Locally an $n$-Euclidean half-space
 P000114,true,Cardinality $=\aleph_1$,P000237,false,Topological $n$-manifold with boundary
 P000114,true,Cardinality $=\aleph_1$,P000238,false,Has a real TVS topology
-P000114,true,Cardinality $=\aleph_1$,P000240,false,CW complex
 P000114,true,Cardinality $=\aleph_1$,P000241,false,Locally a Euclidean half-line
-P000114,true,Cardinality $=\aleph_1$,P000245,false,Has finitely many open sets
 P000114,false,Cardinality $=\aleph_1$,P000229,true,Semilocally simply connected
-P000115,true,Subparacompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000115,false,Subparacompact,P000163,true,Cardinality $\leq\mathfrak c$
 P000115,false,Subparacompact,P000172,true,Radial
 P000115,false,Subparacompact,P000173,true,Pseudoradial
-P000115,false,Subparacompact,P000175,true,Cardinality $\geq 3$
 P000115,false,Subparacompact,P000209,true,Density $\leq\mathfrak c$
 P000115,false,Subparacompact,P000210,true,$\alpha_1$
 P000115,false,Subparacompact,P000211,true,$\alpha_{1.5}$
@@ -785,13 +615,11 @@ P000115,false,Subparacompact,P000213,true,$\alpha_3$
 P000115,false,Subparacompact,P000214,true,$\alpha_4$
 P000115,false,Subparacompact,P000229,true,Semilocally simply connected
 P000116,false,Polish,P000229,true,Semilocally simply connected
-P000117,true,Has a $\sigma$-locally finite network,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000117,true,Has a $\sigma$-locally finite network,P000061,true,Cozero complemented
 P000117,true,Has a $\sigma$-locally finite network,P000081,true,Countably tight
 P000117,false,Has a $\sigma$-locally finite network,P000206,true,Strongly Choquet
 P000117,false,Has a $\sigma$-locally finite network,P000209,true,Density $\leq\mathfrak c$
 P000117,false,Has a $\sigma$-locally finite network,P000229,true,Semilocally simply connected
-P000118,true,Has a $\sigma$-locally finite $k$-network,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000118,true,Has a $\sigma$-locally finite $k$-network,P000061,true,Cozero complemented
 P000118,true,Has a $\sigma$-locally finite $k$-network,P000081,true,Countably tight
 P000118,false,Has a $\sigma$-locally finite $k$-network,P000206,true,Strongly Choquet
@@ -808,28 +636,19 @@ P000119,true,Stonean,P000209,true,Density $\leq\mathfrak c$
 P000119,true,Stonean,P000219,true,Toronto
 P000119,true,Stonean,P000243,true,Has countable $\pi$-weight
 P000119,true,Stonean,P000244,true,Has countable $\pi$-character
-P000120,true,Locally orderable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000120,true,Locally orderable,P000127,false,Dowker
-P000120,false,Locally orderable,P000209,true,Density $\leq\mathfrak c$
-P000121,true,Pseudometrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000121,true,Pseudometrizable,P000186,true,Embeds in a topological $W$-group
 P000121,false,Pseudometrizable,P000209,true,Density $\leq\mathfrak c$
 P000121,false,Pseudometrizable,P000229,true,Semilocally simply connected
-P000122,true,Locally Euclidean,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000122,true,Locally Euclidean,P000061,true,Cozero complemented
 P000122,true,Locally Euclidean,P000127,false,Dowker
-P000122,false,Locally Euclidean,P000209,true,Density $\leq\mathfrak c$
-P000123,true,Locally $n$-Euclidean,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000123,true,Locally $n$-Euclidean,P000061,true,Cozero complemented
 P000123,true,Locally $n$-Euclidean,P000127,false,Dowker
-P000123,false,Locally $n$-Euclidean,P000209,true,Density $\leq\mathfrak c$
 P000124,true,Topological $n$-manifold,P000086,true,Homogeneous
 P000124,true,Topological $n$-manifold,P000240,true,CW complex
-P000126,true,Door,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000126,true,Door,P000205,false,Cut point space
 P000126,true,Door,P000217,true,Strongly zero-dimensional
 P000126,true,Door,P000229,true,Semilocally simply connected
-P000126,false,Door,P000209,true,Density $\leq\mathfrak c$
 P000127,true,Dowker,P000029,true,Countable chain condition
 P000127,true,Dowker,P000046,true,Totally path disconnected
 P000127,true,Dowker,P000047,true,Totally disconnected
@@ -919,28 +738,19 @@ P000127,true,Dowker,P000242,false,Weakly contractible
 P000127,true,Dowker,P000243,false,Has countable $\pi$-weight
 P000127,true,Dowker,P000244,true,Has countable $\pi$-character
 P000127,true,Dowker,P000244,false,Has countable $\pi$-character
-P000128,true,$k$-Lindelöf,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000128,true,$k$-Lindelöf,P000209,true,Density $\leq\mathfrak c$
 P000128,false,$k$-Lindelöf,P000229,true,Semilocally simply connected
-P000129,true,Indiscrete,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000129,true,Indiscrete,P000163,true,Cardinality $\leq\mathfrak c$
-P000130,true,Locally compact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000130,false,Locally compact,P000209,true,Density $\leq\mathfrak c$
 P000130,false,Locally compact,P000229,true,Semilocally simply connected
-P000131,true,Hereditarily Lindelöf,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000131,true,Hereditarily Lindelöf,P000061,true,Cozero complemented
-P000131,true,Hereditarily Lindelöf,P000163,true,Cardinality $\leq\mathfrak c$
 P000131,true,Hereditarily Lindelöf,P000209,true,Density $\leq\mathfrak c$
 P000131,false,Hereditarily Lindelöf,P000229,true,Semilocally simply connected
-P000132,true,$G_\delta$ space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000132,true,$G_\delta$ space,P000061,true,Cozero complemented
 P000132,true,$G_\delta$ space,P000081,true,Countably tight
 P000132,true,$G_\delta$ space,P000115,true,Subparacompact
 P000132,true,$G_\delta$ space,P000194,true,Submetacompact
 P000132,false,$G_\delta$ space,P000209,true,Density $\leq\mathfrak c$
 P000132,false,$G_\delta$ space,P000229,true,Semilocally simply connected
-P000133,true,LOTS,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000133,false,LOTS,P000209,true,Density $\leq\mathfrak c$
 P000134,false,$R_1$,P000209,true,Density $\leq\mathfrak c$
 P000134,false,$R_1$,P000229,true,Semilocally simply connected
 P000135,false,$R_0$,P000140,true,$k_1$-space
@@ -964,7 +774,6 @@ P000135,false,$R_0$,P000233,true,Has open path components
 P000135,false,$R_0$,P000234,true,Has open connected components
 P000135,false,$R_0$,P000239,true,Semilocally contractible
 P000135,false,$R_0$,P000244,true,Has countable $\pi$-character
-P000136,true,Anticompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000136,true,Anticompact,P000061,true,Cozero complemented
 P000136,true,Anticompact,P000229,true,Semilocally simply connected
 P000136,false,Anticompact,P000209,true,Density $\leq\mathfrak c$
@@ -1016,98 +825,67 @@ P000139,true,Has an isolated point,P000064,true,Baire
 P000139,true,Has an isolated point,P000206,true,Strongly Choquet
 P000139,true,Has an isolated point,P000229,true,Semilocally simply connected
 P000139,false,Has an isolated point,P000209,true,Density $\leq\mathfrak c$
-P000140,true,$k_1$-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000140,false,$k_1$-space,P000209,true,Density $\leq\mathfrak c$
 P000140,false,$k_1$-space,P000229,true,Semilocally simply connected
-P000141,true,$k_2$-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000141,false,$k_2$-space,P000209,true,Density $\leq\mathfrak c$
 P000141,false,$k_2$-space,P000229,true,Semilocally simply connected
-P000142,true,$k_3$-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000142,false,$k_3$-space,P000209,true,Density $\leq\mathfrak c$
 P000142,false,$k_3$-space,P000229,true,Semilocally simply connected
-P000143,false,Weak Hausdorff,P000209,true,Density $\leq\mathfrak c$
-P000143,false,Weak Hausdorff,P000210,true,$\alpha_1$
-P000143,false,Weak Hausdorff,P000211,true,$\alpha_{1.5}$
-P000143,false,Weak Hausdorff,P000212,true,$\alpha_2$
-P000143,false,Weak Hausdorff,P000213,true,$\alpha_3$
-P000143,false,Weak Hausdorff,P000214,true,$\alpha_4$
 P000143,false,Weak Hausdorff,P000229,true,Semilocally simply connected
-P000144,true,Locally pseudometrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000144,true,Locally pseudometrizable,P000061,true,Cozero complemented
 P000144,false,Locally pseudometrizable,P000209,true,Density $\leq\mathfrak c$
 P000144,false,Locally pseudometrizable,P000229,true,Semilocally simply connected
-P000145,true,Strongly paracompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000145,false,Strongly paracompact,P000209,true,Density $\leq\mathfrak c$
 P000145,false,Strongly paracompact,P000229,true,Semilocally simply connected
-P000146,true,Ultraparacompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000146,true,Ultraparacompact,P000229,true,Semilocally simply connected
-P000146,false,Ultraparacompact,P000175,true,Cardinality $\geq 3$
 P000146,false,Ultraparacompact,P000209,true,Density $\leq\mathfrak c$
-P000147,true,P-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000147,true,P-space,P000172,true,Radial
 P000147,true,P-space,P000173,true,Pseudoradial
 P000147,true,P-space,P000229,true,Semilocally simply connected
 P000147,false,P-space,P000209,true,Density $\leq\mathfrak c$
-P000148,true,CGWH,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000148,false,CGWH,P000209,true,Density $\leq\mathfrak c$
 P000148,false,CGWH,P000229,true,Semilocally simply connected
-P000149,true,$\omega$-Lindelöf,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000149,true,$\omega$-Lindelöf,P000128,true,$k$-Lindelöf
 P000149,true,$\omega$-Lindelöf,P000209,true,Density $\leq\mathfrak c$
 P000149,false,$\omega$-Lindelöf,P000229,true,Semilocally simply connected
-P000150,true,$\omega$-Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000150,true,$\omega$-Rothberger,P000128,true,$k$-Lindelöf
-P000150,true,$\omega$-Rothberger,P000163,true,Cardinality $\leq\mathfrak c$
 P000150,true,$\omega$-Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000150,true,$\omega$-Rothberger,P000217,true,Strongly zero-dimensional
 P000150,true,$\omega$-Rothberger,P000229,true,Semilocally simply connected
-P000151,true,Strategically Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000151,true,Strategically Rothberger,P000072,true,2-Markov Menger
 P000151,true,Strategically Rothberger,P000128,true,$k$-Lindelöf
-P000151,true,Strategically Rothberger,P000163,true,Cardinality $\leq\mathfrak c$
 P000151,true,Strategically Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000151,true,Strategically Rothberger,P000217,true,Strongly zero-dimensional
 P000151,true,Strategically Rothberger,P000229,true,Semilocally simply connected
 P000152,true,Markov Rothberger,P000017,true,$\sigma$-compact
-P000152,true,Markov Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000152,true,Markov Rothberger,P000061,true,Cozero complemented
 P000152,true,Markov Rothberger,P000081,true,Countably tight
 P000152,true,Markov Rothberger,P000128,true,$k$-Lindelöf
-P000152,true,Markov Rothberger,P000163,true,Cardinality $\leq\mathfrak c$
 P000152,true,Markov Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000152,true,Markov Rothberger,P000217,true,Strongly zero-dimensional
 P000152,true,Markov Rothberger,P000229,true,Semilocally simply connected
 P000152,true,Markov Rothberger,P000244,true,Has countable $\pi$-character
-P000153,true,$\omega$-Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000153,true,$\omega$-Menger,P000128,true,$k$-Lindelöf
 P000153,true,$\omega$-Menger,P000209,true,Density $\leq\mathfrak c$
 P000153,false,$\omega$-Menger,P000229,true,Semilocally simply connected
-P000154,true,GO-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000154,false,GO-space,P000209,true,Density $\leq\mathfrak c$
 P000155,true,Locally $1$-Euclidean,P000036,true,Connected
 P000155,true,Locally $1$-Euclidean,P000037,true,Path connected
 P000155,true,Locally $1$-Euclidean,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000155,true,Locally $1$-Euclidean,P000061,true,Cozero complemented
 P000155,true,Locally $1$-Euclidean,P000189,true,$\sigma$-connected
 P000155,true,Locally $1$-Euclidean,P000209,true,Density $\leq\mathfrak c$
-P000156,true,$k$-Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000156,true,$k$-Rothberger,P000069,true,Strategic Menger
 P000156,true,$k$-Rothberger,P000072,true,2-Markov Menger
 P000156,true,$k$-Rothberger,P000157,true,Strategically $k$-Rothberger
 P000156,true,$k$-Rothberger,P000160,true,Strategically $k$-Menger
 P000156,true,$k$-Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000156,false,$k$-Rothberger,P000229,true,Semilocally simply connected
-P000157,true,Strategically $k$-Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000157,true,Strategically $k$-Rothberger,P000069,true,Strategic Menger
 P000157,true,Strategically $k$-Rothberger,P000072,true,2-Markov Menger
 P000157,true,Strategically $k$-Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000157,false,Strategically $k$-Rothberger,P000229,true,Semilocally simply connected
 P000158,true,Markov $k$-Rothberger,P000017,true,$\sigma$-compact
-P000158,true,Markov $k$-Rothberger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000158,true,Markov $k$-Rothberger,P000111,true,Hemicompact
 P000158,true,Markov $k$-Rothberger,P000209,true,Density $\leq\mathfrak c$
 P000158,false,Markov $k$-Rothberger,P000229,true,Semilocally simply connected
-P000159,true,$k$-Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000159,true,$k$-Menger,P000069,true,Strategic Menger
 P000159,true,$k$-Menger,P000072,true,2-Markov Menger
 P000159,true,$k$-Menger,P000156,true,$k$-Rothberger
@@ -1115,7 +893,6 @@ P000159,true,$k$-Menger,P000157,true,Strategically $k$-Rothberger
 P000159,true,$k$-Menger,P000160,true,Strategically $k$-Menger
 P000159,true,$k$-Menger,P000209,true,Density $\leq\mathfrak c$
 P000159,false,$k$-Menger,P000229,true,Semilocally simply connected
-P000160,true,Strategically $k$-Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000160,true,Strategically $k$-Menger,P000069,true,Strategic Menger
 P000160,true,Strategically $k$-Menger,P000072,true,2-Markov Menger
 P000160,true,Strategically $k$-Menger,P000156,true,$k$-Rothberger
@@ -1123,7 +900,6 @@ P000160,true,Strategically $k$-Menger,P000157,true,Strategically $k$-Rothberger
 P000160,true,Strategically $k$-Menger,P000209,true,Density $\leq\mathfrak c$
 P000160,false,Strategically $k$-Menger,P000229,true,Semilocally simply connected
 P000161,true,Markov $k$-Menger,P000017,true,$\sigma$-compact
-P000161,true,Markov $k$-Menger,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000161,true,Markov $k$-Menger,P000111,true,Hemicompact
 P000161,true,Markov $k$-Menger,P000156,true,$k$-Rothberger
 P000161,true,Markov $k$-Menger,P000157,true,Strategically $k$-Rothberger
@@ -1133,18 +909,15 @@ P000161,false,Markov $k$-Menger,P000229,true,Semilocally simply connected
 P000162,true,Realcompact,P000033,true,Countably metacompact
 P000162,true,Realcompact,P000115,true,Subparacompact
 P000162,true,Realcompact,P000194,true,Submetacompact
-P000162,false,Realcompact,P000209,true,Density $\leq\mathfrak c$
 P000162,false,Realcompact,P000229,true,Semilocally simply connected
 P000163,false,Cardinality $\leq\mathfrak c$,P000192,true,Quasi-sober
 P000163,false,Cardinality $\leq\mathfrak c$,P000194,true,Submetacompact
 P000163,false,Cardinality $\leq\mathfrak c$,P000206,true,Strongly Choquet
 P000163,false,Cardinality $\leq\mathfrak c$,P000229,true,Semilocally simply connected
-P000165,false,Pseudonormal,P000175,true,Cardinality $\geq 3$
 P000165,false,Pseudonormal,P000209,true,Density $\leq\mathfrak c$
 P000165,false,Pseudonormal,P000229,true,Semilocally simply connected
 P000166,true,Has a coarser separable metrizable topology,P000103,true,Strongly KC
 P000166,false,Has a coarser separable metrizable topology,P000229,true,Semilocally simply connected
-P000167,true,Sequentially discrete,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000167,true,Sequentially discrete,P000061,true,Cozero complemented
 P000167,true,Sequentially discrete,P000100,true,KC
 P000167,true,Sequentially discrete,P000103,true,Strongly KC
@@ -1153,8 +926,6 @@ P000167,true,Sequentially discrete,P000170,true,$k_1$-Hausdorff
 P000167,true,Sequentially discrete,P000171,true,$k_2$-Hausdorff
 P000167,true,Sequentially discrete,P000204,false,Has a cut point
 P000167,true,Sequentially discrete,P000205,false,Cut point space
-P000167,false,Sequentially discrete,P000209,true,Density $\leq\mathfrak c$
-P000168,true,Countable sets are discrete,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000168,true,Countable sets are discrete,P000061,true,Cozero complemented
 P000168,true,Countable sets are discrete,P000064,true,Baire
 P000168,true,Countable sets are discrete,P000083,true,Meta-Lindelöf
@@ -1162,41 +933,25 @@ P000168,true,Countable sets are discrete,P000105,true,Para-Lindelöf
 P000168,true,Countable sets are discrete,P000204,false,Has a cut point
 P000168,true,Countable sets are discrete,P000205,false,Cut point space
 P000168,true,Countable sets are discrete,P000206,true,Strongly Choquet
-P000168,false,Countable sets are discrete,P000209,true,Density $\leq\mathfrak c$
 P000169,true,Semi-Hausdorff,P000073,true,Sober
 P000169,true,Semi-Hausdorff,P000192,true,Quasi-sober
-P000169,false,Semi-Hausdorff,P000209,true,Density $\leq\mathfrak c$
 P000169,false,Semi-Hausdorff,P000229,true,Semilocally simply connected
-P000170,false,$k_1$-Hausdorff,P000209,true,Density $\leq\mathfrak c$
 P000170,false,$k_1$-Hausdorff,P000229,true,Semilocally simply connected
 P000171,false,$k_2$-Hausdorff,P000172,true,Radial
 P000171,false,$k_2$-Hausdorff,P000173,true,Pseudoradial
-P000171,false,$k_2$-Hausdorff,P000209,true,Density $\leq\mathfrak c$
-P000171,false,$k_2$-Hausdorff,P000210,true,$\alpha_1$
-P000171,false,$k_2$-Hausdorff,P000211,true,$\alpha_{1.5}$
-P000171,false,$k_2$-Hausdorff,P000212,true,$\alpha_2$
-P000171,false,$k_2$-Hausdorff,P000213,true,$\alpha_3$
-P000171,false,$k_2$-Hausdorff,P000214,true,$\alpha_4$
 P000171,false,$k_2$-Hausdorff,P000229,true,Semilocally simply connected
-P000172,true,Radial,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000172,false,Radial,P000194,true,Submetacompact
 P000172,false,Radial,P000209,true,Density $\leq\mathfrak c$
 P000172,false,Radial,P000229,true,Semilocally simply connected
-P000173,true,Pseudoradial,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000173,false,Pseudoradial,P000194,true,Submetacompact
 P000173,false,Pseudoradial,P000209,true,Density $\leq\mathfrak c$
 P000173,false,Pseudoradial,P000229,true,Semilocally simply connected
-P000174,true,Well-based,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000174,false,Well-based,P000194,true,Submetacompact
 P000174,false,Well-based,P000209,true,Density $\leq\mathfrak c$
 P000174,false,Well-based,P000229,true,Semilocally simply connected
-P000175,false,Cardinality $\geq 3$,P000193,true,Shrinking
-P000175,false,Cardinality $\geq 3$,P000207,true,Strongly collectionwise normal
-P000175,false,Cardinality $\geq 3$,P000218,true,Ultranormal
 P000177,true,$\sigma$-space,P000006,true,$T_{3 \frac{1}{2}}$
 P000177,true,$\sigma$-space,P000009,true,Functionally Hausdorff
 P000177,true,$\sigma$-space,P000012,true,Completely regular
-P000177,true,$\sigma$-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000177,true,$\sigma$-space,P000061,true,Cozero complemented
 P000177,true,$\sigma$-space,P000081,true,Countably tight
 P000177,true,$\sigma$-space,P000103,true,Strongly KC
@@ -1206,7 +961,6 @@ P000177,true,$\sigma$-space,P000115,true,Subparacompact
 P000177,true,$\sigma$-space,P000162,true,Realcompact
 P000177,true,$\sigma$-space,P000194,true,Submetacompact
 P000177,true,$\sigma$-space,P000215,true,Hereditarily realcompact
-P000177,false,$\sigma$-space,P000209,true,Density $\leq\mathfrak c$
 P000177,false,$\sigma$-space,P000229,true,Semilocally simply connected
 P000178,true,$\aleph$-space,P000006,true,$T_{3 \frac{1}{2}}$
 P000178,true,$\aleph$-space,P000007,true,$T_4$
@@ -1221,7 +975,6 @@ P000178,true,$\aleph$-space,P000031,true,Metacompact
 P000178,true,$\aleph$-space,P000032,true,Countably paracompact
 P000178,true,$\aleph$-space,P000034,true,Fully normal
 P000178,true,$\aleph$-space,P000035,true,Fully $T_4$
-P000178,true,$\aleph$-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000178,true,$\aleph$-space,P000061,true,Cozero complemented
 P000178,true,$\aleph$-space,P000067,true,$T_6$
 P000178,true,$\aleph$-space,P000081,true,Countably tight
@@ -1240,14 +993,11 @@ P000178,true,$\aleph$-space,P000194,true,Submetacompact
 P000178,true,$\aleph$-space,P000207,true,Strongly collectionwise normal
 P000178,true,$\aleph$-space,P000215,true,Hereditarily realcompact
 P000178,true,$\aleph$-space,P000216,true,Hereditarily paracompact
-P000178,false,$\aleph$-space,P000209,true,Density $\leq\mathfrak c$
 P000178,false,$\aleph$-space,P000229,true,Semilocally simply connected
 P000179,true,$\aleph_0$-space,P000128,true,$k$-Lindelöf
 P000179,true,$\aleph_0$-space,P000149,true,$\omega$-Lindelöf
 P000179,false,$\aleph_0$-space,P000229,true,Semilocally simply connected
-P000180,true,Hereditarily separable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000180,true,Hereditarily separable,P000061,true,Cozero complemented
-P000180,true,Hereditarily separable,P000163,true,Cardinality $\leq\mathfrak c$
 P000180,false,Hereditarily separable,P000229,true,Semilocally simply connected
 P000181,true,Countably infinite,P000061,true,Cozero complemented
 P000181,true,Countably infinite,P000118,true,Has a $\sigma$-locally finite $k$-network
@@ -1256,35 +1006,27 @@ P000181,true,Countably infinite,P000183,true,Has a countable $k$-network
 P000181,true,Countably infinite,P000229,true,Semilocally simply connected
 P000181,true,Countably infinite,P000243,true,Has countable $\pi$-weight
 P000181,true,Countably infinite,P000244,true,Has countable $\pi$-character
-P000182,true,Has a countable network,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000182,true,Has a countable network,P000061,true,Cozero complemented
 P000182,true,Has a countable network,P000128,true,$k$-Lindelöf
 P000182,true,Has a countable network,P000149,true,$\omega$-Lindelöf
-P000182,true,Has a countable network,P000163,true,Cardinality $\leq\mathfrak c$
 P000182,false,Has a countable network,P000229,true,Semilocally simply connected
-P000183,true,Has a countable $k$-network,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000183,true,Has a countable $k$-network,P000061,true,Cozero complemented
 P000183,true,Has a countable $k$-network,P000128,true,$k$-Lindelöf
 P000183,true,Has a countable $k$-network,P000149,true,$\omega$-Lindelöf
-P000183,true,Has a countable $k$-network,P000163,true,Cardinality $\leq\mathfrak c$
 P000183,false,Has a countable $k$-network,P000229,true,Semilocally simply connected
 P000184,false,Embeddable into Euclidean space,P000229,true,Semilocally simply connected
-P000185,true,Partition topology,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000185,true,Partition topology,P000186,true,Embeds in a topological $W$-group
 P000185,false,Partition topology,P000209,true,Density $\leq\mathfrak c$
 P000186,true,Embeds in a topological $W$-group,P000033,true,Countably metacompact
-P000186,true,Embeds in a topological $W$-group,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000186,true,Embeds in a topological $W$-group,P000244,true,Has countable $\pi$-character
 P000186,false,Embeds in a topological $W$-group,P000209,true,Density $\leq\mathfrak c$
 P000186,false,Embeds in a topological $W$-group,P000229,true,Semilocally simply connected
-P000187,true,W-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000187,false,W-space,P000209,true,Density $\leq\mathfrak c$
 P000187,false,W-space,P000229,true,Semilocally simply connected
 P000188,true,Continuum,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000188,true,Continuum,P000173,true,Pseudoradial
 P000188,true,Continuum,P000209,true,Density $\leq\mathfrak c$
 P000188,false,Continuum,P000229,true,Semilocally simply connected
-P000189,true,$\sigma$-connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000189,true,$\sigma$-connected,P000209,true,Density $\leq\mathfrak c$
 P000189,false,$\sigma$-connected,P000229,true,Semilocally simply connected
 P000190,true,Ordinal space,P000058,true,Cardinality $\lt\mathfrak c$
@@ -1293,8 +1035,6 @@ P000190,true,Ordinal space,P000163,true,Cardinality $\leq\mathfrak c$
 P000190,true,Ordinal space,P000198,true,Has countable extent
 P000190,true,Ordinal space,P000209,true,Density $\leq\mathfrak c$
 P000190,true,Ordinal space,P000227,false,Has a discrete closed subset of size $\mathfrak c$
-P000191,true,Has points $G_\delta$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000191,false,Has points $G_\delta$,P000209,true,Density $\leq\mathfrak c$
 P000191,false,Has points $G_\delta$,P000229,true,Semilocally simply connected
 P000192,false,Quasi-sober,P000198,true,Has countable extent
 P000192,false,Quasi-sober,P000209,true,Density $\leq\mathfrak c$
@@ -1306,10 +1046,8 @@ P000192,false,Quasi-sober,P000214,true,$\alpha_4$
 P000192,false,Quasi-sober,P000217,true,Strongly zero-dimensional
 P000192,false,Quasi-sober,P000229,true,Semilocally simply connected
 P000192,false,Quasi-sober,P000234,true,Has open connected components
-P000193,true,Shrinking,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000193,false,Shrinking,P000209,true,Density $\leq\mathfrak c$
 P000193,false,Shrinking,P000229,true,Semilocally simply connected
-P000194,true,Submetacompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000194,false,Submetacompact,P000209,true,Density $\leq\mathfrak c$
 P000194,false,Submetacompact,P000210,true,$\alpha_1$
 P000194,false,Submetacompact,P000211,true,$\alpha_{1.5}$
@@ -1326,31 +1064,24 @@ P000195,true,Stone space,P000213,true,$\alpha_3$
 P000195,true,Stone space,P000214,true,$\alpha_4$
 P000196,true,Hereditarily connected,P000023,true,Weakly locally compact
 P000196,true,Hereditarily connected,P000028,true,First countable
-P000196,true,Hereditarily connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000196,true,Hereditarily connected,P000079,true,Sequential
 P000196,true,Hereditarily connected,P000080,true,Fréchet Urysohn
 P000196,true,Hereditarily connected,P000081,true,Countably tight
 P000196,true,Hereditarily connected,P000130,true,Locally compact
 P000196,true,Hereditarily connected,P000140,true,$k_1$-space
 P000196,true,Hereditarily connected,P000141,true,$k_2$-space
-P000196,true,Hereditarily connected,P000163,true,Cardinality $\leq\mathfrak c$
 P000196,true,Hereditarily connected,P000187,true,W-space
 P000196,true,Hereditarily connected,P000209,true,Density $\leq\mathfrak c$
 P000196,true,Hereditarily connected,P000228,true,Weakly first countable
 P000196,true,Hereditarily connected,P000244,true,Has countable $\pi$-character
-P000197,true,Has countable spread,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000197,true,Has countable spread,P000061,true,Cozero complemented
-P000197,true,Has countable spread,P000163,true,Cardinality $\leq\mathfrak c$
 P000197,true,Has countable spread,P000209,true,Density $\leq\mathfrak c$
 P000197,false,Has countable spread,P000229,true,Semilocally simply connected
-P000198,true,Has countable extent,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000198,true,Has countable extent,P000209,true,Density $\leq\mathfrak c$
 P000198,false,Has countable extent,P000227,true,Has a discrete closed subset of size $\mathfrak c$
 P000198,false,Has countable extent,P000229,true,Semilocally simply connected
-P000199,true,Contractible,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000199,true,Contractible,P000061,true,Cozero complemented
 P000199,true,Contractible,P000209,true,Density $\leq\mathfrak c$
-P000200,true,Simply connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000200,true,Simply connected,P000061,true,Cozero complemented
 P000200,true,Simply connected,P000209,true,Density $\leq\mathfrak c$
 P000200,true,Simply connected,P000224,true,Weakly locally contractible
@@ -1358,7 +1089,6 @@ P000200,true,Simply connected,P000239,true,Semilocally contractible
 P000201,true,Has a generic point,P000023,true,Weakly locally compact
 P000201,true,Has a generic point,P000028,true,First countable
 P000201,true,Has a generic point,P000042,true,Locally path connected
-P000201,true,Has a generic point,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000201,true,Has a generic point,P000079,true,Sequential
 P000201,true,Has a generic point,P000080,true,Fréchet Urysohn
 P000201,true,Has a generic point,P000081,true,Countably tight
@@ -1367,7 +1097,6 @@ P000201,true,Has a generic point,P000118,true,Has a $\sigma$-locally finite $k$-
 P000201,true,Has a generic point,P000130,true,Locally compact
 P000201,true,Has a generic point,P000140,true,$k_1$-space
 P000201,true,Has a generic point,P000141,true,$k_2$-space
-P000201,true,Has a generic point,P000163,true,Cardinality $\leq\mathfrak c$
 P000201,true,Has a generic point,P000172,true,Radial
 P000201,true,Has a generic point,P000173,true,Pseudoradial
 P000201,true,Has a generic point,P000174,true,Well-based
@@ -1386,12 +1115,10 @@ P000201,true,Has a generic point,P000232,true,$LC^1$
 P000201,true,Has a generic point,P000243,true,Has countable $\pi$-weight
 P000201,true,Has a generic point,P000244,true,Has countable $\pi$-character
 P000202,true,Has a point with a unique neighborhood,P000028,true,First countable
-P000202,true,Has a point with a unique neighborhood,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000202,true,Has a point with a unique neighborhood,P000079,true,Sequential
 P000202,true,Has a point with a unique neighborhood,P000080,true,Fréchet Urysohn
 P000202,true,Has a point with a unique neighborhood,P000081,true,Countably tight
 P000202,true,Has a point with a unique neighborhood,P000141,true,$k_2$-space
-P000202,true,Has a point with a unique neighborhood,P000163,true,Cardinality $\leq\mathfrak c$
 P000202,true,Has a point with a unique neighborhood,P000172,true,Radial
 P000202,true,Has a point with a unique neighborhood,P000173,true,Pseudoradial
 P000202,true,Has a point with a unique neighborhood,P000174,true,Well-based
@@ -1404,7 +1131,6 @@ P000202,true,Has a point with a unique neighborhood,P000213,true,$\alpha_3$
 P000202,true,Has a point with a unique neighborhood,P000214,true,$\alpha_4$
 P000202,true,Has a point with a unique neighborhood,P000228,true,Weakly first countable
 P000202,true,Has a point with a unique neighborhood,P000244,true,Has countable $\pi$-character
-P000203,true,Almost discrete,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000203,true,Almost discrete,P000209,true,Density $\leq\mathfrak c$
 P000203,true,Almost discrete,P000229,true,Semilocally simply connected
 P000204,true,Has a cut point,P000001,true,$T_0$
@@ -1436,16 +1162,13 @@ P000205,true,Cut point space,P000229,true,Semilocally simply connected
 P000205,true,Cut point space,P000244,true,Has countable $\pi$-character
 P000206,false,Strongly Choquet,P000209,true,Density $\leq\mathfrak c$
 P000206,false,Strongly Choquet,P000229,true,Semilocally simply connected
-P000207,true,Strongly collectionwise normal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000207,false,Strongly collectionwise normal,P000209,true,Density $\leq\mathfrak c$
 P000207,false,Strongly collectionwise normal,P000229,true,Semilocally simply connected
-P000208,true,Noetherian,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000208,true,Noetherian,P000061,true,Cozero complemented
 P000208,true,Noetherian,P000068,true,Rothberger
 P000208,true,Noetherian,P000085,true,Basically disconnected
 P000208,true,Noetherian,P000150,true,$\omega$-Rothberger
 P000208,true,Noetherian,P000151,true,Strategically Rothberger
-P000208,true,Noetherian,P000163,true,Cardinality $\leq\mathfrak c$
 P000208,true,Noetherian,P000172,true,Radial
 P000208,true,Noetherian,P000173,true,Pseudoradial
 P000208,true,Noetherian,P000209,true,Density $\leq\mathfrak c$
@@ -1461,12 +1184,10 @@ P000209,false,Density $\leq\mathfrak c$,P000211,true,$\alpha_{1.5}$
 P000209,false,Density $\leq\mathfrak c$,P000212,true,$\alpha_2$
 P000209,false,Density $\leq\mathfrak c$,P000213,true,$\alpha_3$
 P000209,false,Density $\leq\mathfrak c$,P000214,true,$\alpha_4$
-P000209,false,Density $\leq\mathfrak c$,P000215,true,Hereditarily realcompact
 P000209,false,Density $\leq\mathfrak c$,P000216,true,Hereditarily paracompact
 P000209,false,Density $\leq\mathfrak c$,P000217,true,Strongly zero-dimensional
 P000209,false,Density $\leq\mathfrak c$,P000218,true,Ultranormal
 P000209,false,Density $\leq\mathfrak c$,P000219,true,Toronto
-P000209,false,Density $\leq\mathfrak c$,P000220,true,Ultrametrizable
 P000209,false,Density $\leq\mathfrak c$,P000223,true,Locally contractible
 P000209,false,Density $\leq\mathfrak c$,P000224,true,Weakly locally contractible
 P000209,false,Density $\leq\mathfrak c$,P000225,true,$LC$
@@ -1478,26 +1199,18 @@ P000209,false,Density $\leq\mathfrak c$,P000231,true,Weakly locally simply conne
 P000209,false,Density $\leq\mathfrak c$,P000232,true,$LC^1$
 P000209,false,Density $\leq\mathfrak c$,P000233,true,Has open path components
 P000209,false,Density $\leq\mathfrak c$,P000234,true,Has open connected components
-P000209,false,Density $\leq\mathfrak c$,P000235,true,Locally a Euclidean half-space
-P000209,false,Density $\leq\mathfrak c$,P000236,true,Locally an $n$-Euclidean half-space
 P000209,false,Density $\leq\mathfrak c$,P000239,true,Semilocally contractible
-P000209,false,Density $\leq\mathfrak c$,P000240,true,CW complex
 P000209,false,Density $\leq\mathfrak c$,P000244,true,Has countable $\pi$-character
-P000210,true,$\alpha_1$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000210,false,$\alpha_1$,P000229,true,Semilocally simply connected
-P000211,true,$\alpha_{1.5}$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000211,true,$\alpha_{1.5}$,P000210,true,$\alpha_1$
 P000211,false,$\alpha_{1.5}$,P000229,true,Semilocally simply connected
-P000212,true,$\alpha_2$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000212,true,$\alpha_2$,P000210,true,$\alpha_1$
 P000212,true,$\alpha_2$,P000211,true,$\alpha_{1.5}$
 P000212,false,$\alpha_2$,P000229,true,Semilocally simply connected
-P000213,true,$\alpha_3$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000213,true,$\alpha_3$,P000210,true,$\alpha_1$
 P000213,true,$\alpha_3$,P000211,true,$\alpha_{1.5}$
 P000213,true,$\alpha_3$,P000212,true,$\alpha_2$
 P000213,false,$\alpha_3$,P000229,true,Semilocally simply connected
-P000214,true,$\alpha_4$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000214,true,$\alpha_4$,P000210,true,$\alpha_1$
 P000214,true,$\alpha_4$,P000211,true,$\alpha_{1.5}$
 P000214,true,$\alpha_4$,P000212,true,$\alpha_2$
@@ -1509,15 +1222,11 @@ P000215,true,Hereditarily realcompact,P000103,true,Strongly KC
 P000215,true,Hereditarily realcompact,P000115,true,Subparacompact
 P000215,true,Hereditarily realcompact,P000194,true,Submetacompact
 P000215,false,Hereditarily realcompact,P000229,true,Semilocally simply connected
-P000216,true,Hereditarily paracompact,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000216,false,Hereditarily paracompact,P000229,true,Semilocally simply connected
-P000217,true,Strongly zero-dimensional,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000217,true,Strongly zero-dimensional,P000229,true,Semilocally simply connected
-P000218,true,Ultranormal,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000218,true,Ultranormal,P000088,true,Collectionwise normal
 P000218,true,Ultranormal,P000229,true,Semilocally simply connected
 P000219,true,Toronto,P000041,true,Locally connected
-P000219,true,Toronto,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000219,true,Toronto,P000061,true,Cozero complemented
 P000219,true,Toronto,P000085,true,Basically disconnected
 P000219,true,Toronto,P000172,true,Radial
@@ -1530,7 +1239,6 @@ P000219,true,Toronto,P000214,true,$\alpha_4$
 P000219,true,Toronto,P000217,true,Strongly zero-dimensional
 P000219,true,Toronto,P000229,true,Semilocally simply connected
 P000219,true,Toronto,P000234,true,Has open connected components
-P000220,true,Ultrametrizable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000220,true,Ultrametrizable,P000162,true,Realcompact
 P000220,true,Ultrametrizable,P000186,true,Embeds in a topological $W$-group
 P000220,true,Ultrametrizable,P000215,true,Hereditarily realcompact
@@ -1547,12 +1255,9 @@ P000222,true,Has a cofinite topology,P000182,true,Has a countable network
 P000222,true,Has a cofinite topology,P000209,true,Density $\leq\mathfrak c$
 P000222,true,Has a cofinite topology,P000228,true,Weakly first countable
 P000222,true,Has a cofinite topology,P000229,true,Semilocally simply connected
-P000223,true,Locally contractible,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000223,true,Locally contractible,P000061,true,Cozero complemented
 P000223,true,Locally contractible,P000081,true,Countably tight
-P000224,true,Weakly locally contractible,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000224,true,Weakly locally contractible,P000061,true,Cozero complemented
-P000225,true,$LC$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000225,true,$LC$,P000061,true,Cozero complemented
 P000225,true,$LC$,P000081,true,Countably tight
 P000225,true,$LC$,P000223,true,Locally contractible
@@ -1560,18 +1265,15 @@ P000225,true,$LC$,P000224,true,Weakly locally contractible
 P000225,true,$LC$,P000230,true,Locally simply connected
 P000225,true,$LC$,P000231,true,Weakly locally simply connected
 P000226,true,Artinian,P000022,true,Pseudocompact
-P000226,true,Artinian,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000226,true,Artinian,P000064,true,Baire
 P000226,true,Artinian,P000117,true,Has a $\sigma$-locally finite network
 P000226,true,Artinian,P000118,true,Has a $\sigma$-locally finite $k$-network
-P000226,true,Artinian,P000163,true,Cardinality $\leq\mathfrak c$
 P000226,true,Artinian,P000206,true,Strongly Choquet
 P000227,true,Has a discrete closed subset of size $\mathfrak c$,P000001,true,$T_0$
 P000227,true,Has a discrete closed subset of size $\mathfrak c$,P000073,true,Sober
 P000227,true,Has a discrete closed subset of size $\mathfrak c$,P000192,true,Quasi-sober
 P000227,true,Has a discrete closed subset of size $\mathfrak c$,P000229,true,Semilocally simply connected
 P000227,true,Has a discrete closed subset of size $\mathfrak c$,P000238,false,Has a real TVS topology
-P000228,true,Weakly first countable,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000228,true,Weakly first countable,P000210,true,$\alpha_1$
 P000228,true,Weakly first countable,P000211,true,$\alpha_{1.5}$
 P000228,true,Weakly first countable,P000212,true,$\alpha_2$
@@ -1582,18 +1284,15 @@ P000229,false,Semilocally simply connected,P000233,true,Has open path components
 P000229,false,Semilocally simply connected,P000234,true,Has open connected components
 P000229,false,Semilocally simply connected,P000243,true,Has countable $\pi$-weight
 P000229,false,Semilocally simply connected,P000244,true,Has countable $\pi$-character
-P000230,true,Locally simply connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000230,true,Locally simply connected,P000061,true,Cozero complemented
 P000230,true,Locally simply connected,P000081,true,Countably tight
 P000230,true,Locally simply connected,P000223,true,Locally contractible
 P000230,true,Locally simply connected,P000224,true,Weakly locally contractible
 P000230,true,Locally simply connected,P000225,true,$LC$
 P000230,true,Locally simply connected,P000239,true,Semilocally contractible
-P000231,true,Weakly locally simply connected,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000231,true,Weakly locally simply connected,P000061,true,Cozero complemented
 P000231,true,Weakly locally simply connected,P000224,true,Weakly locally contractible
 P000231,true,Weakly locally simply connected,P000239,true,Semilocally contractible
-P000232,true,$LC^1$,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000232,true,$LC^1$,P000061,true,Cozero complemented
 P000232,true,$LC^1$,P000081,true,Countably tight
 P000232,true,$LC^1$,P000223,true,Locally contractible
@@ -1602,11 +1301,7 @@ P000232,true,$LC^1$,P000225,true,$LC$
 P000232,true,$LC^1$,P000230,true,Locally simply connected
 P000232,true,$LC^1$,P000231,true,Weakly locally simply connected
 P000232,true,$LC^1$,P000239,true,Semilocally contractible
-P000233,true,Has open path components,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000234,true,Has open connected components,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000235,true,Locally a Euclidean half-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000235,true,Locally a Euclidean half-space,P000061,true,Cozero complemented
-P000236,true,Locally an $n$-Euclidean half-space,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000236,true,Locally an $n$-Euclidean half-space,P000061,true,Cozero complemented
 P000237,true,Topological $n$-manifold with boundary,P000184,true,Embeddable into Euclidean space
 P000237,true,Topological $n$-manifold with boundary,P000240,true,CW complex
@@ -1623,7 +1318,6 @@ P000238,true,Has a real TVS topology,P000033,true,Countably metacompact
 P000238,true,Has a real TVS topology,P000034,true,Fully normal
 P000238,true,Has a real TVS topology,P000038,true,Injectively path connected
 P000238,true,Has a real TVS topology,P000043,true,Locally injectively path connected
-P000238,true,Has a real TVS topology,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000238,true,Has a real TVS topology,P000061,true,Cozero complemented
 P000238,true,Has a real TVS topology,P000062,true,Weakly Lindelöf
 P000238,true,Has a real TVS topology,P000081,true,Countably tight
@@ -1639,7 +1333,6 @@ P000238,true,Has a real TVS topology,P000131,true,Hereditarily Lindelöf
 P000238,true,Has a real TVS topology,P000132,true,$G_\delta$ space
 P000238,true,Has a real TVS topology,P000145,true,Strongly paracompact
 P000238,true,Has a real TVS topology,P000149,true,$\omega$-Lindelöf
-P000238,true,Has a real TVS topology,P000163,true,Cardinality $\leq\mathfrak c$
 P000238,true,Has a real TVS topology,P000165,true,Pseudonormal
 P000238,true,Has a real TVS topology,P000180,true,Hereditarily separable
 P000238,true,Has a real TVS topology,P000182,true,Has a countable network
@@ -1651,11 +1344,9 @@ P000238,true,Has a real TVS topology,P000198,true,Has countable extent
 P000238,true,Has a real TVS topology,P000207,true,Strongly collectionwise normal
 P000238,true,Has a real TVS topology,P000209,true,Density $\leq\mathfrak c$
 P000238,true,Has a real TVS topology,P000216,true,Hereditarily paracompact
-P000239,true,Semilocally contractible,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000239,true,Semilocally contractible,P000061,true,Cozero complemented
 P000239,true,Semilocally contractible,P000224,true,Weakly locally contractible
 P000239,true,Semilocally contractible,P000231,true,Weakly locally simply connected
-P000240,true,CW complex,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000240,true,CW complex,P000064,true,Baire
 P000240,true,CW complex,P000080,true,Fréchet Urysohn
 P000240,true,CW complex,P000106,true,Has a $G_\delta$-diagonal
@@ -1671,17 +1362,12 @@ P000240,true,CW complex,P000244,true,Has countable $\pi$-character
 P000241,true,Locally a Euclidean half-line,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000241,true,Locally a Euclidean half-line,P000061,true,Cozero complemented
 P000241,true,Locally a Euclidean half-line,P000209,true,Density $\leq\mathfrak c$
-P000242,true,Weakly contractible,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000242,true,Weakly contractible,P000061,true,Cozero complemented
 P000242,true,Weakly contractible,P000199,true,Contractible
 P000242,true,Weakly contractible,P000209,true,Density $\leq\mathfrak c$
 P000242,true,Weakly contractible,P000224,true,Weakly locally contractible
 P000242,true,Weakly contractible,P000239,true,Semilocally contractible
-P000243,true,Has countable $\pi$-weight,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000243,true,Has countable $\pi$-weight,P000061,true,Cozero complemented
-P000244,true,Has countable $\pi$-character,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
-P000245,true,Has finitely many open sets,P000059,true,Cardinality $\leq 2^{\mathfrak c}$
 P000245,true,Has finitely many open sets,P000064,true,Baire
-P000245,true,Has finitely many open sets,P000163,true,Cardinality $\leq\mathfrak c$
 P000245,true,Has finitely many open sets,P000206,true,Strongly Choquet
 P000245,true,Has finitely many open sets,P000219,true,Toronto

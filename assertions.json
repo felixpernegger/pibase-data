@@ -37,5 +37,226 @@
     "holds": false,
     "note": "two copy of [0,1]",
     "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000002",
+      "value": false
+    },
+    "then": {
+      "property": "P000214",
+      "value": true
+    },
+    "holds": false,
+    "note": "kolmogorov quotient",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000001",
+      "value": false
+    },
+    "then": {
+      "property": "P000214",
+      "value": true
+    },
+    "holds": false,
+    "note": "kolmogorov quotient on non alpah 4",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000001",
+      "value": false
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "indiscrete space",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000002",
+      "value": false
+    },
+    "then": {
+      "property": "P000209",
+      "value": true
+    },
+    "holds": false,
+    "note": "big indiscrete space with two identified points",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000001",
+      "value": false
+    },
+    "then": {
+      "property": "P000209",
+      "value": true
+    },
+    "holds": false,
+    "note": "big indiscrete space with two points identified",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000013",
+      "value": false
+    },
+    "then": {
+      "property": "P000175",
+      "value": true
+    },
+    "holds": true,
+    "note": "since we know all \\le 3 spaces",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000028",
+      "value": true
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "big indiscrete space",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000016",
+      "value": true
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "big indiscrete space",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000036",
+      "value": true
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "big indiscrete space",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000014",
+      "value": false
+    },
+    "then": {
+      "property": "P000175",
+      "value": true
+    },
+    "holds": true,
+    "note": "by knowing all such spaces",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000049",
+      "value": false
+    },
+    "then": {
+      "property": "P000175",
+      "value": true
+    },
+    "holds": true,
+    "note": "by knowing all such spaces",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000129",
+      "value": true
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "big indiscrete spaces",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000114",
+      "value": true
+    },
+    "then": {
+      "property": "P000129",
+      "value": false
+    },
+    "holds": false,
+    "note": "indiscrete space of card alelph 1",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000052",
+      "value": true
+    },
+    "then": {
+      "property": "P000114",
+      "value": false
+    },
+    "holds": false,
+    "note": "discrete space of alpeh 1",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000052",
+      "value": true
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "discret big spaces",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000203",
+      "value": true
+    },
+    "then": {
+      "property": "P000059",
+      "value": true
+    },
+    "holds": false,
+    "note": "big discrete wspace with generic point",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000001",
+      "value": false
+    },
+    "then": {
+      "property": "P000018",
+      "value": true
+    },
+    "holds": false,
+    "note": "komlo quotient",
+    "date": "2026-07-03"
   }
 ]

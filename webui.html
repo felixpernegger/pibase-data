@@ -54,12 +54,12 @@
   #btn-false { background: var(--false); } #btn-false:hover:enabled { background: var(--false-hover); }
   #btn-random { background: var(--accent); }
   #btn-random:hover:enabled { background: #1d4685; }
-  #log {
+  .logbox {
     white-space: pre-wrap; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
     background: #f0f2f5; border-radius: 8px; padding: 12px; margin-top: 16px;
     color: var(--muted); display: none;
   }
-  #log.error { color: var(--false); background: #fdf1f0; }
+  .logbox.error { color: var(--false); background: #fdf1f0; }
   h2 { font-size: 16px; margin: 28px 0 10px; }
   table { width: 100%; border-collapse: collapse; background: var(--card);
           border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
@@ -75,6 +75,33 @@
   #problems { display: none; background: #fdf1f0; border: 1px solid #f0c6c2;
               color: var(--false); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;
               font-size: 14px; white-space: pre-wrap; }
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 20px; }
+  .tab {
+    background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    color: var(--muted); font: inherit; font-weight: 600; padding: 8px 16px; cursor: pointer;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover { color: var(--fg); }
+  #list-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  #list-search {
+    flex: 1 1 280px; max-width: 420px; padding: 9px 12px; font: inherit;
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  #list-count { color: var(--muted); font-size: 14px; }
+  #list-table tr.hide { display: none; }
+  .mini { padding: 3px 12px; font-size: 13px; border-radius: 6px; margin-right: 4px; }
+  .mini.t { background: var(--true); }  .mini.t:hover:enabled { background: var(--true-hover); }
+  .mini.f { background: var(--false); } .mini.f:hover:enabled { background: var(--false-hover); }
+  .actions { white-space: nowrap; text-align: right; }
+  .assert-panel td { background: #fafbfc; }
+  .assert-panel input {
+    width: min(380px, 55%); padding: 8px 10px; font: inherit;
+    border: 1px solid var(--line); border-radius: 6px; margin-right: 8px;
+  }
+  .assert-panel button { padding: 8px 16px; font-size: 14px; margin-right: 6px; }
+  .assert-panel .save-t { background: var(--true); }
+  .assert-panel .save-f { background: var(--false); }
+  .assert-panel .cancel { background: var(--muted); }
 </style>
 </head>
 <body>
@@ -91,20 +118,36 @@
     <div class="chip"><b id="c-settled">…</b><span id="c-settled-label">settled by you</span></div>
   </div>
 
+  <div class="tabs">
+    <button class="tab active" id="tab-btn-assert">Assert</button>
+    <button class="tab" id="tab-btn-list">Open list</button>
+  </div>
+
+  <section id="tab-assert">
   <div class="card">
     <div class="impl" id="impl">loading…</div>
     <div class="uids" id="uids"></div>
     <div class="controls">
       <button id="btn-random">Random</button>
-      <input id="note" placeholder="optional note / reference">
+      <input id="note" placeholder="note / reference (required)">
       <button id="btn-true" disabled>True</button>
       <button id="btn-false" disabled>False</button>
     </div>
-    <div id="log"></div>
+    <div id="log" class="logbox"></div>
   </div>
 
   <h2>your assertions</h2>
   <div id="assertions"></div>
+  </section>
+
+  <section id="tab-list" hidden>
+    <div id="list-controls">
+      <input id="list-search" placeholder="filter by property name or uid (e.g. compact, P16)">
+      <span id="list-count"></span>
+    </div>
+    <div id="list-log" class="logbox"></div>
+    <div id="list-holder"><div class="empty">loading…</div></div>
+  </section>
 </div>
 
 <script>
@@ -144,10 +187,10 @@ function litSpan(lit) {
   return span;
 }
 
-function showLog(text, isError) {
-  const log = $('log');
+function showLog(text, isError, el) {
+  const log = el || $('log');
   log.textContent = text;
-  log.className = isError ? 'error' : '';
+  log.className = 'logbox' + (isError ? ' error' : '');
   log.style.display = text ? 'block' : 'none';
 }
 
@@ -247,6 +290,11 @@ async function drawRandom() {
 
 async function verdict(holds) {
   if (!pending || busy) return;
+  if (!$('note').value.trim()) {
+    showLog('a note (reference / justification) is required', true);
+    $('note').focus();
+    return;
+  }
   busy = true; setButtons();
   showLog('saving and refreshing the open list …', false);
   try {
@@ -259,6 +307,7 @@ async function verdict(holds) {
     showLog(r.log, false);
     $('note').value = '';
     applyState(r.state);
+    invalidateList();
     pending = null;
     busy = false;
     await drawRandom();
@@ -276,11 +325,154 @@ async function removeAssertion(index) {
     const r = await api('/api/remove', { index: index });
     showLog(r.log, false);
     applyState(r.state);
+    invalidateList();
   } catch (e) {
     showLog(String(e.message || e), true);
   }
   busy = false; setButtons();
 }
+
+// ---------------------------------------------------------- open-list tab
+
+let listStale = true;
+
+function invalidateList() {
+  listStale = true;
+  if (!$('tab-list').hidden) loadUnknown();
+}
+
+function switchTab(name) {
+  $('tab-assert').hidden = name !== 'assert';
+  $('tab-list').hidden = name !== 'list';
+  $('tab-btn-assert').classList.toggle('active', name === 'assert');
+  $('tab-btn-list').classList.toggle('active', name === 'list');
+  if (name === 'list' && listStale) loadUnknown();
+}
+
+async function loadUnknown() {
+  listStale = false;
+  closePanel();
+  const holder = $('list-holder');
+  holder.innerHTML = '<div class="empty">loading…</div>';
+  let pairs;
+  try {
+    pairs = (await api('/api/unknown')).pairs;
+  } catch (e) {
+    holder.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = String(e.message || e);
+    holder.appendChild(div);
+    return;
+  }
+  const table = document.createElement('table');
+  table.id = 'list-table';
+  table.innerHTML = '<tr><th>#</th><th>implication</th><th></th></tr>';
+  pairs.forEach((p, i) => {
+    const tr = table.insertRow();
+    tr.dataset.key = (p.if.name + ' ' + p.if.uid + ' ' + p.then.name + ' '
+                      + p.then.uid).toLowerCase();
+    tr.insertCell().textContent = i + 1;
+    const stmt = tr.insertCell();
+    stmt.appendChild(litSpan(p.if));
+    stmt.appendChild(document.createTextNode(' ⇒ '));
+    stmt.appendChild(litSpan(p.then));
+    const actions = tr.insertCell();
+    actions.className = 'actions';
+    for (const holds of [true, false]) {
+      const btn = document.createElement('button');
+      btn.className = 'mini ' + (holds ? 't' : 'f');
+      btn.textContent = holds ? 'true' : 'false';
+      btn.title = 'assert this implication is ' + holds;
+      btn.onclick = () => openPanel(tr, p, holds);
+      actions.appendChild(btn);
+    }
+  });
+  holder.textContent = '';
+  holder.appendChild(table);
+  filterList();
+  typeset(holder);
+}
+
+let panelRow = null;
+
+function closePanel() {
+  if (panelRow) { panelRow.remove(); panelRow = null; }
+}
+
+function openPanel(tr, pair, holds) {
+  closePanel();
+  panelRow = document.createElement('tr');
+  panelRow.className = 'assert-panel';
+  const td = panelRow.insertCell();
+  td.colSpan = 3;
+
+  const input = document.createElement('input');
+  input.placeholder = 'note / reference (required)';
+  const save = document.createElement('button');
+  save.className = holds ? 'save-t' : 'save-f';
+  save.textContent = 'assert ' + (holds ? 'true' : 'false');
+  const cancel = document.createElement('button');
+  cancel.className = 'cancel';
+  cancel.textContent = 'cancel';
+  cancel.onclick = closePanel;
+
+  save.onclick = async () => {
+    if (busy) return;
+    if (!input.value.trim()) {
+      showLog('a note (reference / justification) is required', true, $('list-log'));
+      input.focus();
+      return;
+    }
+    busy = true; setButtons();
+    save.disabled = cancel.disabled = true;
+    showLog('saving and refreshing the open list …', false, $('list-log'));
+    try {
+      const r = await api('/api/assert', {
+        if: { uid: pair.if.uid, value: pair.if.value },
+        then: { uid: pair.then.uid, value: pair.then.value },
+        holds: holds,
+        note: input.value.trim(),
+      });
+      showLog(r.log, false, $('list-log'));
+      applyState(r.state);
+      busy = false; setButtons();
+      closePanel();
+      await loadUnknown();
+    } catch (e) {
+      showLog(String(e.message || e), true, $('list-log'));
+      save.disabled = cancel.disabled = false;
+      busy = false; setButtons();
+    }
+  };
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') save.onclick(); });
+
+  td.appendChild(input);
+  td.appendChild(save);
+  td.appendChild(cancel);
+  tr.after(panelRow);
+  input.focus();
+}
+
+function filterList() {
+  const table = $('list-table');
+  if (!table) return;
+  const terms = $('list-search').value.toLowerCase().split(/\s+/).filter(Boolean);
+  let shown = 0;
+  for (const tr of table.rows) {
+    if (!tr.dataset.key) continue; // header
+    const hit = terms.every(t => tr.dataset.key.includes(t));
+    tr.classList.toggle('hide', !hit);
+    if (hit) shown++;
+  }
+  const total = table.rows.length - 1;
+  $('list-count').textContent =
+    terms.length ? shown + ' of ' + total + ' open implications' : total + ' open implications';
+}
+
+$('tab-btn-assert').onclick = () => switchTab('assert');
+$('tab-btn-list').onclick = () => switchTab('list');
+$('list-search').addEventListener('input', () => { closePanel(); filterList(); });
 
 $('btn-random').onclick = drawRandom;
 $('btn-true').onclick = () => verdict(true);

@@ -72,6 +72,16 @@ class State:
                 "assertions": assertions,
                 "problems": self.engine.problems}
 
+    def unknown_json(self):
+        _, unknown = self.engine.classify()
+        pairs = []
+        for a, b in unknown:
+            ua, va = self.engine.prover.unlit(a)
+            ub, vb = self.engine.prover.unlit(b)
+            pairs.append({"if": self.lit_json(ua, va),
+                          "then": self.lit_json(ub, vb)})
+        return {"pairs": pairs}
+
     def random_json(self):
         _, unknown = self.engine.classify()
         if not unknown:
@@ -134,6 +144,9 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/random":
             with STATE.lock:
                 self.send_json(STATE.random_json())
+        elif self.path == "/api/unknown":
+            with STATE.lock:
+                self.send_json(STATE.unknown_json())
         else:
             self.send_json({"error": "not found"}, 404)
 
