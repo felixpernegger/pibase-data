@@ -1,0 +1,46 @@
+name: validate assertion
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  validate:
+    if: contains(github.event.issue.labels.*.name, 'assertion')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Validate
+        id: validate
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          if python scripts/assertion_issue.py validate > comment.md; then
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Comment and label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          VALID: ${{ steps.validate.outputs.valid }}
+        run: |
+          gh label create valid   -R "$REPO" -c 2da44e -d "assertion passes consistency checks" --force
+          gh label create invalid -R "$REPO" -c cf222e -d "assertion rejected by consistency checks" --force
+          gh issue comment "$NUMBER" -R "$REPO" --body-file comment.md
+          if [ "$VALID" = "true" ]; then
+            gh issue edit "$NUMBER" -R "$REPO" --add-label valid --remove-label invalid || true
+          else
+            gh issue edit "$NUMBER" -R "$REPO" --add-label invalid --remove-label valid || true
+          fi

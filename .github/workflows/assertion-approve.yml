@@ -1,0 +1,80 @@
+name: approve assertion
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: approve-assertion
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    # 'approved' labels can only be added by users with triage rights on the repo
+    if: >
+      github.event.label.name == 'approved' &&
+      contains(github.event.issue.labels.*.name, 'assertion')
+    runs-on: ubuntu-latest
+    outputs:
+      applied: ${{ steps.apply.outputs.applied }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Apply assertion
+        id: apply
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          if python scripts/assertion_issue.py apply > comment.md; then
+            echo "applied=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "applied=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Commit
+        if: steps.apply.outputs.applied == 'true'
+        env:
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assertions.json
+          git commit -m "Add assertion from #$NUMBER"
+          git push origin main
+      - name: Comment and close
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          APPLIED: ${{ steps.apply.outputs.applied }}
+        run: |
+          gh issue comment "$NUMBER" -R "$REPO" --body-file comment.md
+          if [ "$APPLIED" = "true" ]; then
+            gh label create accepted -R "$REPO" -c 2da44e -d "assertion merged into assertions.json" --force
+            gh issue edit "$NUMBER" -R "$REPO" --add-label accepted
+            gh issue close "$NUMBER" -R "$REPO" -r completed
+          else
+            gh issue edit "$NUMBER" -R "$REPO" --remove-label approved || true
+          fi
+
+  # pushes made with GITHUB_TOKEN do not trigger the push workflow,
+  # so redeploy the site explicitly after a successful apply
+  deploy:
+    needs: apply
+    if: needs.apply.outputs.applied == 'true'
+    uses: ./.github/workflows/website.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

@@ -185,8 +185,12 @@ def do_status(engine, statement_text):
     print(f"{fmt_statement(engine.props, stmt)}\n  {kind.upper()}: {detail}")
 
 
-def do_assert(engine, statement_text, verdict, note):
-    """Save an assertion. Returns the new assertions list (caller rebuilds)."""
+def do_assert(engine, statement_text, verdict, note, save=True):
+    """Save an assertion. Returns the new assertions list (caller rebuilds).
+
+    save=False runs every guard check (parse, duplicates, conflicts, engine
+    consistency) without writing assertions.json — used for dry-run validation.
+    """
     holds = {"true": True, "false": False}[verdict]
     if not note.strip():
         raise CommandError(
@@ -232,9 +236,12 @@ def do_assert(engine, statement_text, verdict, note):
             for p in new_problems))
 
     assertions = engine.assertions + [entry]
-    save_assertions(assertions)
-    print(f"saved as assertion #{len(assertions) - 1} "
-          f"({'holds' if holds else 'fails'}) in {STORE.name}")
+    if save:
+        save_assertions(assertions)
+        print(f"saved as assertion #{len(assertions) - 1} "
+              f"({'holds' if holds else 'fails'}) in {STORE.name}")
+    else:
+        print("dry run: all consistency checks passed")
     return assertions
 
 

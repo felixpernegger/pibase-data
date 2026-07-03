@@ -3,3 +3,7 @@
 !.vscode/extensions.json
 !.vscode/settings.json
 web
+__pycache__/
+*.pyc
+_site/
+node_modules/

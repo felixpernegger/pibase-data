@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pi-base open implications</title>
+<script>
+  window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  :root {
+    --fg: #1a1d21; --muted: #6b7280; --line: #e5e7eb; --bg: #f6f7f9;
+    --card: #ffffff; --accent: #2455a4;
+    --true: #1a7f37; --true-hover: #146c2e;
+    --false: #b42318; --false-hover: #9a1c13;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+  .sub a { color: var(--accent); }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .chip {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 14px; text-align: center; min-width: 96px;
+  }
+  .chip b { display: block; font-size: 20px; }
+  .chip span { font-size: 12px; color: var(--muted); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .impl { font-size: 22px; text-align: center; margin: 8px 0 4px; min-height: 34px; }
+  .impl a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  .impl a:hover { border-bottom-style: solid; }
+  .impl .not { color: var(--false); font-weight: 700; margin-right: 2px; }
+  .impl .arrow { margin: 0 14px; color: var(--muted); }
+  .uids { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 18px; min-height: 20px; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  input#note {
+    flex: 1 1 260px; max-width: 420px; padding: 10px 12px; font: inherit;
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  button {
+    font: inherit; font-weight: 600; padding: 10px 22px; border: 0;
+    border-radius: 8px; cursor: pointer; color: #fff; transition: background .15s;
+  }
+  button:disabled { opacity: .45; cursor: default; }
+  #btn-true { background: var(--true); }   #btn-true:hover:enabled { background: var(--true-hover); }
+  #btn-false { background: var(--false); } #btn-false:hover:enabled { background: var(--false-hover); }
+  #btn-random { background: var(--accent); }
+  #btn-random:hover:enabled { background: #1d4685; }
+  .logbox {
+    white-space: pre-wrap; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+    background: #f0f2f5; border-radius: 8px; padding: 12px; margin-top: 16px;
+    color: var(--muted); display: none;
+  }
+  .logbox.error { color: var(--false); background: #fdf1f0; }
+  h2 { font-size: 16px; margin: 28px 0 10px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+          border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { padding: 8px 12px; text-align: left; font-size: 14px; border-top: 1px solid var(--line); }
+  th { background: #fafbfc; color: var(--muted); font-weight: 600; border-top: 0; }
+  td a { color: var(--accent); text-decoration: none; }
+  .holds { color: var(--true); font-weight: 600; }
+  .fails { color: var(--false); font-weight: 600; }
+  .note-cell { color: var(--muted); }
+  .empty { color: var(--muted); font-size: 14px; padding: 14px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 20px; }
+  .tab {
+    background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    color: var(--muted); font: inherit; font-weight: 600; padding: 8px 16px; cursor: pointer;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover { color: var(--fg); }
+  #list-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  #list-search {
+    flex: 1 1 280px; max-width: 420px; padding: 9px 12px; font: inherit;
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  #list-count { color: var(--muted); font-size: 14px; }
+  #list-table tr.hide { display: none; }
+  .mini { padding: 3px 12px; font-size: 13px; border-radius: 6px; margin-right: 4px; }
+  .mini.t { background: var(--true); }  .mini.t:hover:enabled { background: var(--true-hover); }
+  .mini.f { background: var(--false); } .mini.f:hover:enabled { background: var(--false-hover); }
+  .actions { white-space: nowrap; text-align: right; }
+  .assert-panel td { background: #fafbfc; }
+  .assert-panel input {
+    width: min(380px, 55%); padding: 8px 10px; font: inherit;
+    border: 1px solid var(--line); border-radius: 6px; margin-right: 8px;
+  }
+  .assert-panel button { padding: 8px 16px; font-size: 14px; margin-right: 6px; }
+  .assert-panel .save-t { background: var(--true); }
+  .assert-panel .save-f { background: var(--false); }
+  .assert-panel .cancel { background: var(--muted); }
+  footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>pi-base open implications</h1>
+  <div class="sub">
+    implications between <a href="https://topology.pi-base.org" target="_blank" rel="noopener">pi-base</a>
+    properties that are neither provable from its theorems nor refuted by any of its spaces.
+    Know the answer to one? Assert it below — it opens a pre-filled GitHub issue,
+    and once reviewed the site updates.
+  </div>
+
+  <div class="stats">
+    <div class="chip"><b id="c-unknown">…</b><span>open</span></div>
+    <div class="chip"><b id="c-refuted">…</b><span>refuted</span></div>
+    <div class="chip"><b id="c-provable">…</b><span>provable</span></div>
+    <div class="chip"><b id="c-settled">…</b><span id="c-settled-label">accepted assertions</span></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-btn-assert">Random</button>
+    <button class="tab" id="tab-btn-list">Open list</button>
+  </div>
+
+  <section id="tab-assert">
+  <div class="card">
+    <div class="impl" id="impl">loading…</div>
+    <div class="uids" id="uids"></div>
+    <div class="controls">
+      <button id="btn-random">Random</button>
+      <input id="note" placeholder="note / reference (required)">
+      <button id="btn-true" disabled>True</button>
+      <button id="btn-false" disabled>False</button>
+    </div>
+    <div id="log" class="logbox"></div>
+  </div>
+
+  <h2>accepted assertions</h2>
+  <div id="assertions"></div>
+  </section>
+
+  <section id="tab-list" hidden>
+    <div id="list-controls">
+      <input id="list-search" placeholder="filter by property name or uid (e.g. compact, P16)">
+      <span id="list-count"></span>
+    </div>
+    <div id="list-log" class="logbox"></div>
+    <div id="list-holder"><div class="empty">loading…</div></div>
+  </section>
+
+  <footer>
+    generated <span id="generated">…</span> from
+    <a href="https://github.com/__REPO__" target="_blank" rel="noopener">__REPO__</a>
+    · deductions by a local reimplementation of the
+    <a href="https://github.com/pi-base/web" target="_blank" rel="noopener">pi-base prover</a>
+    · asserting opens a GitHub issue (account required); accepted assertions are
+    reviewed and committed to <code>assertions.json</code>
+  </footer>
+</div>
+
+<script>
+const REPO = '__REPO__';
+const $ = id => document.getElementById(id);
+let DATA = null;
+let pending = null;
+
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {});
+}
+
+function shortLit(lit) { return (lit.value ? '' : '~') + 'P' + parseInt(lit.uid.slice(1), 10); }
+function shortStmt(pair) { return shortLit(pair.if) + ' => ' + shortLit(pair.then); }
+
+function issueUrl(pair, holds, note) {
+  const stmt = shortStmt(pair);
+  return 'https://github.com/' + REPO + '/issues/new'
+    + '?template=assertion.yml'
+    + '&title=' + encodeURIComponent('[assertion] ' + stmt + ' is ' + holds)
+    + '&statement=' + encodeURIComponent(stmt)
+    + '&verdict=' + encodeURIComponent(String(holds))
+    + '&note=' + encodeURIComponent(note);
+}
+
+function litSpan(lit) {
+  const span = document.createElement('span');
+  if (!lit.value) {
+    const not = document.createElement('span');
+    not.className = 'not';
+    not.textContent = '¬';
+    span.appendChild(not);
+  }
+  const a = document.createElement('a');
+  a.href = 'https://topology.pi-base.org/properties/' + lit.uid;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.textContent = lit.name;
+  span.appendChild(a);
+  return span;
+}
+
+function showLog(text, isError, el) {
+  const log = el || $('log');
+  log.textContent = text;
+  log.className = 'logbox' + (isError ? ' error' : '');
+  log.style.display = text ? 'block' : 'none';
+}
+
+function setButtons() {
+  $('btn-true').disabled = $('btn-false').disabled = !pending;
+}
+
+function renderPending() {
+  const impl = $('impl');
+  impl.textContent = '';
+  if (!pending) {
+    impl.textContent = 'no open implications left!';
+    $('uids').textContent = '';
+    setButtons();
+    return;
+  }
+  impl.appendChild(litSpan(pending.if));
+  const arrow = document.createElement('span');
+  arrow.className = 'arrow';
+  arrow.textContent = '⇒';
+  impl.appendChild(arrow);
+  impl.appendChild(litSpan(pending.then));
+  $('uids').textContent = shortLit(pending.if) + '  ⇒  ' + shortLit(pending.then);
+  typeset(impl);
+  setButtons();
+}
+
+function drawRandom() {
+  pending = DATA.pairs.length
+    ? DATA.pairs[Math.floor(Math.random() * DATA.pairs.length)] : null;
+  showLog('', false);
+  renderPending();
+}
+
+function submit(pair, holds, note, logEl) {
+  if (!note.trim()) {
+    showLog('a note (reference / justification) is required', true, logEl);
+    return false;
+  }
+  window.open(issueUrl(pair, holds, note.trim()), '_blank', 'noopener');
+  showLog('opened a pre-filled GitHub issue in a new tab — press "Create" there '
+          + 'to submit. It is checked automatically and appears here once accepted.',
+          false, logEl);
+  return true;
+}
+
+function verdict(holds) {
+  if (!pending) return;
+  submit(pending, holds, $('note').value, $('log'));
+}
+
+function renderStats() {
+  $('c-unknown').textContent = DATA.counts.unknown.toLocaleString();
+  $('c-refuted').textContent = DATA.counts.refuted.toLocaleString();
+  $('c-provable').textContent = DATA.counts.provable.toLocaleString();
+  $('c-settled').textContent = DATA.assertions.length.toLocaleString();
+  $('generated').textContent = DATA.generated;
+}
+
+function renderAssertions() {
+  const holder = $('assertions');
+  holder.textContent = '';
+  if (!DATA.assertions.length) {
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = 'none yet';
+    holder.appendChild(div);
+    return;
+  }
+  const table = document.createElement('table');
+  table.innerHTML = '<tr><th>statement</th><th>verdict</th><th>note</th><th>date</th></tr>';
+  for (const a of DATA.assertions) {
+    const tr = table.insertRow();
+    const stmt = tr.insertCell();
+    stmt.appendChild(litSpan(a.if));
+    stmt.appendChild(document.createTextNode(' ⇒ '));
+    stmt.appendChild(litSpan(a.then));
+    const v = tr.insertCell();
+    v.textContent = a.holds ? 'holds' : 'fails';
+    v.className = a.holds ? 'holds' : 'fails';
+    const note = tr.insertCell();
+    note.textContent = a.note;
+    note.className = 'note-cell';
+    tr.insertCell().textContent = a.date;
+  }
+  holder.appendChild(table);
+  typeset(holder);
+}
+
+// ---------------------------------------------------------- open-list tab
+
+let listBuilt = false;
+let panelRow = null;
+
+function switchTab(name) {
+  $('tab-assert').hidden = name !== 'assert';
+  $('tab-list').hidden = name !== 'list';
+  $('tab-btn-assert').classList.toggle('active', name === 'assert');
+  $('tab-btn-list').classList.toggle('active', name === 'list');
+  if (name === 'list' && !listBuilt) buildList();
+}
+
+function closePanel() {
+  if (panelRow) { panelRow.remove(); panelRow = null; }
+}
+
+function openPanel(tr, pair, holds) {
+  closePanel();
+  panelRow = document.createElement('tr');
+  panelRow.className = 'assert-panel';
+  const td = panelRow.insertCell();
+  td.colSpan = 3;
+
+  const input = document.createElement('input');
+  input.placeholder = 'note / reference (required)';
+  const save = document.createElement('button');
+  save.className = holds ? 'save-t' : 'save-f';
+  save.textContent = 'open GitHub issue (' + holds + ')';
+  const cancel = document.createElement('button');
+  cancel.className = 'cancel';
+  cancel.textContent = 'cancel';
+  cancel.onclick = closePanel;
+
+  save.onclick = () => {
+    if (submit(pair, holds, input.value, $('list-log'))) closePanel();
+  };
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') save.onclick(); });
+
+  td.appendChild(input);
+  td.appendChild(save);
+  td.appendChild(cancel);
+  tr.after(panelRow);
+  input.focus();
+}
+
+function buildList() {
+  listBuilt = true;
+  const holder = $('list-holder');
+  const table = document.createElement('table');
+  table.id = 'list-table';
+  table.innerHTML = '<tr><th>#</th><th>implication</th><th></th></tr>';
+  DATA.pairs.forEach((p, i) => {
+    const tr = table.insertRow();
+    tr.dataset.key = (p.if.name + ' ' + p.if.uid + ' ' + p.then.name + ' '
+                      + p.then.uid).toLowerCase();
+    tr.insertCell().textContent = i + 1;
+    const stmt = tr.insertCell();
+    stmt.appendChild(litSpan(p.if));
+    stmt.appendChild(document.createTextNode(' ⇒ '));
+    stmt.appendChild(litSpan(p.then));
+    const actions = tr.insertCell();
+    actions.className = 'actions';
+    for (const holds of [true, false]) {
+      const btn = document.createElement('button');
+      btn.className = 'mini ' + (holds ? 't' : 'f');
+      btn.textContent = holds ? 'true' : 'false';
+      btn.title = 'assert this implication is ' + holds;
+      btn.onclick = () => openPanel(tr, p, holds);
+      actions.appendChild(btn);
+    }
+  });
+  holder.textContent = '';
+  holder.appendChild(table);
+  filterList();
+  typeset(holder);
+}
+
+function filterList() {
+  const table = $('list-table');
+  if (!table) return;
+  const terms = $('list-search').value.toLowerCase().split(/\s+/).filter(Boolean);
+  let shown = 0, total = 0;
+  for (const tr of table.rows) {
+    if (!tr.dataset.key) continue;
+    total++;
+    const hit = terms.every(t => tr.dataset.key.includes(t));
+    tr.classList.toggle('hide', !hit);
+    if (hit) shown++;
+  }
+  $('list-count').textContent =
+    terms.length ? shown + ' of ' + total + ' open implications' : total + ' open implications';
+}
+
+$('tab-btn-assert').onclick = () => switchTab('assert');
+$('tab-btn-list').onclick = () => switchTab('list');
+$('list-search').addEventListener('input', () => { closePanel(); filterList(); });
+$('btn-random').onclick = drawRandom;
+$('btn-true').onclick = () => verdict(true);
+$('btn-false').onclick = () => verdict(false);
+
+fetch('data.json')
+  .then(r => r.json())
+  .then(d => {
+    DATA = d;
+    renderStats();
+    renderAssertions();
+    drawRandom();
+  })
+  .catch(e => showLog('failed to load data.json: ' + e, true));
+</script>
+</body>
+</html>

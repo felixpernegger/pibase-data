@@ -1,0 +1,36 @@
+name: Assert an implication
+description: Submit a true/false verdict for an open implication between pi-base properties
+title: "[assertion] "
+labels: [assertion]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit your verdict on an open implication. It is validated automatically
+        against the current data (theorems, spaces, and accepted assertions) and
+        goes live on the website once a maintainer approves it.
+  - type: input
+    id: statement
+    attributes:
+      label: Statement
+      description: "The implication, using property uids; negate with ~"
+      placeholder: "P8 => ~P32"
+    validations:
+      required: true
+  - type: dropdown
+    id: verdict
+    attributes:
+      label: Verdict
+      description: "true = the implication always holds; false = a counterexample exists (even if not in pi-base)"
+      options:
+        - "true"
+        - "false"
+    validations:
+      required: true
+  - type: textarea
+    id: note
+    attributes:
+      label: Note
+      description: Reference / justification (required)
+    validations:
+      required: true
