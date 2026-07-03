@@ -94,6 +94,11 @@
   }
   #list-count { color: var(--muted); font-size: 14px; }
   #list-table tr.hide { display: none; }
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { color: var(--accent); }
+  th.sortable.off { cursor: default; }
+  th.sortable.off:hover { color: var(--muted); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
   .mini { padding: 3px 12px; font-size: 13px; border-radius: 6px; margin-right: 4px; }
   .mini.t { background: var(--true); }  .mini.t:hover:enabled { background: var(--true-hover); }
   .mini.f { background: var(--false); } .mini.f:hover:enabled { background: var(--false-hover); }
@@ -190,6 +195,13 @@ let LOCAL = [];          // visitor's local assertions (localStorage)
 let openPairs = [];      // open list after applying LOCAL
 let adjCounts = null;    // counts after applying LOCAL
 let pending = null;      // pair shown on the Random card
+let CLAUSES = null;      // clause set incl. local true assertions
+let MODELS = null;       // space models incl. local virtual counterexamples
+let SCORES = null;       // {ifTrue, ifFalse} aligned with openPairs
+let scoreJob = 0;
+let scoreWorker = null;
+let sortKey = null;      // null | 'ifTrue' | 'ifFalse'
+let sortAsc = false;
 
 function typeset(el) {
   if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {});
@@ -322,7 +334,82 @@ function recompute() {
     refuted: DATA.counts.refuted + addRef,
     provable: DATA.counts.provable + addProv,
   };
+  CLAUSES = clauses;
+  MODELS = models;
   return notices;
+}
+
+// -------------------------------------------- solve-scores (web worker)
+
+function requestScores() {
+  SCORES = null;
+  applyScores();
+  scoreJob++;
+  const payload = {
+    job: scoreJob,
+    clauses: CLAUSES,
+    np: DATA.prop_ids.length,
+    models: MODELS,
+    pairs: openPairs.map(p => [litOf(p.if), litOf(p.then)]),
+  };
+  if (window.Worker) {
+    if (!scoreWorker) {
+      const src = "importScripts('" + new URL('engine.js', location.href) + "');"
+        + "onmessage = function(e){ postMessage({job: e.data.job, "
+        + "scores: PiEngine.computeScores(e.data.clauses, e.data.np, e.data.models, e.data.pairs)}); };";
+      scoreWorker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      scoreWorker.onmessage = ev => {
+        if (ev.data.job !== scoreJob) return; // stale result
+        SCORES = ev.data.scores;
+        applyScores();
+      };
+    }
+    scoreWorker.postMessage(payload);
+  } else {
+    setTimeout(() => {
+      if (payload.job !== scoreJob) return;
+      SCORES = PiEngine.computeScores(payload.clauses, payload.np, payload.models, payload.pairs);
+      applyScores();
+    }, 50);
+  }
+}
+
+function fmtScore(v) { return v === -1 ? '—' : String(v); }
+
+function applyScores() {
+  for (const th of [$('th-sort-true'), $('th-sort-false')]) {
+    if (th) th.classList.toggle('off', !SCORES);
+  }
+  ROWS.forEach((row, i) => {
+    row.tdT.textContent = SCORES ? fmtScore(SCORES.ifTrue[i]) : '…';
+    row.tdF.textContent = SCORES ? fmtScore(SCORES.ifFalse[i]) : '…';
+  });
+  if (SCORES && sortKey) applySort();
+}
+
+function applySort() {
+  const table = $('list-table');
+  if (!table || !SCORES) return;
+  closePanel();
+  const order = ROWS.map((_, i) => i);
+  if (sortKey) {
+    const s = SCORES[sortKey];
+    order.sort((a, b) => (sortAsc ? s[a] - s[b] : s[b] - s[a]) || a - b);
+  }
+  order.forEach((idx, pos) => {
+    table.appendChild(ROWS[idx].tr);
+    ROWS[idx].tdNum.textContent = pos + 1;
+  });
+  const arrow = sortAsc ? ' ▲' : ' ▼';
+  $('th-sort-true').textContent = 'solves if true' + (sortKey === 'ifTrue' ? arrow : '');
+  $('th-sort-false').textContent = 'solves if false' + (sortKey === 'ifFalse' ? arrow : '');
+}
+
+function sortBy(key) {
+  if (!SCORES) return;
+  if (sortKey === key) sortAsc = !sortAsc;
+  else { sortKey = key; sortAsc = false; }
+  applySort();
 }
 
 // ------------------------------------------------ rendering
@@ -430,6 +517,7 @@ function refreshAll(notices) {
   renderStats();
   renderLocal();
   updateSubmit();
+  requestScores();
   listBuilt = false;
   if (!$('tab-list').hidden) buildList();
   if (pending && !openPairs.includes(pending)) drawRandom();
@@ -492,7 +580,7 @@ function openPanel(tr, pair, holds) {
   panelRow = document.createElement('tr');
   panelRow.className = 'assert-panel';
   const td = panelRow.insertCell();
-  td.colSpan = 3;
+  td.colSpan = 5;
 
   const input = document.createElement('input');
   input.placeholder = 'note / reference (required)';
@@ -516,22 +604,36 @@ function openPanel(tr, pair, holds) {
   input.focus();
 }
 
+let ROWS = [];
+
 function buildList() {
   listBuilt = true;
   closePanel();
   const holder = $('list-holder');
   const table = document.createElement('table');
   table.id = 'list-table';
-  table.innerHTML = '<tr><th>#</th><th>implication</th><th></th></tr>';
+  const head = table.insertRow();
+  head.innerHTML = '<th>#</th><th>implication</th>'
+    + '<th class="sortable" id="th-sort-true" title="how many open implications '
+    + 'would be settled (incl. this one) if this were resolved TRUE — click to sort">solves if true</th>'
+    + '<th class="sortable" id="th-sort-false" title="how many open implications '
+    + 'would be settled (incl. this one) if this were resolved FALSE — click to sort">solves if false</th>'
+    + '<th></th>';
+  ROWS = [];
   openPairs.forEach((p, i) => {
     const tr = table.insertRow();
     tr.dataset.key = (p.if.name + ' ' + p.if.uid + ' ' + p.then.name + ' '
                       + p.then.uid).toLowerCase();
-    tr.insertCell().textContent = i + 1;
+    const tdNum = tr.insertCell();
+    tdNum.textContent = i + 1;
     const stmt = tr.insertCell();
     stmt.appendChild(litSpan(p.if));
     stmt.appendChild(document.createTextNode(' ⇒ '));
     stmt.appendChild(litSpan(p.then));
+    const tdT = tr.insertCell();
+    tdT.className = 'num';
+    const tdF = tr.insertCell();
+    tdF.className = 'num';
     const actions = tr.insertCell();
     actions.className = 'actions';
     for (const holds of [true, false]) {
@@ -542,9 +644,13 @@ function buildList() {
       btn.onclick = () => openPanel(tr, p, holds);
       actions.appendChild(btn);
     }
+    ROWS.push({ tr, tdNum, tdT, tdF });
   });
   holder.textContent = '';
   holder.appendChild(table);
+  $('th-sort-true').onclick = () => sortBy('ifTrue');
+  $('th-sort-false').onclick = () => sortBy('ifFalse');
+  applyScores();
   filterList();
   typeset(holder);
 }
@@ -590,6 +696,7 @@ fetch('data.json')
     renderAssertions();
     renderLocal();
     updateSubmit();
+    requestScores();
     drawRandom();
     if (notices.length) showLog(notices.join('\n'), false);
   })

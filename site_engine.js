@@ -92,6 +92,85 @@ const PiEngine = (() => {
     return out;
   }
 
-  return { makeIndex, propagate, holdsIn, hasModel, valToModel, modelToLits, recloseModels };
+  // For every open pair, how many open pairs (incl. itself) a true resp.
+  // false resolution would settle. pairLits: [[aLit, bLit], ...].
+  //
+  // false resolution adds only the virtual model closure({A,~B}) — it settles
+  // exactly the open pairs (X,Y) with X and ~Y holding in that closure.
+  //
+  // true resolution adds the clause (~A | B). Since each pair's closure C is
+  // a fixpoint of the old clauses, propagation under old+new clauses differs
+  // only if the new clause unit-fires on C (A in C with B unknown, or ~B in C
+  // with A unknown) — extend C by the forced literal under the old clauses
+  // (the new clause is satisfied afterwards) and check for contradiction.
+  // The same argument re-closes the space models cheaply. ifTrue = -1 marks
+  // "asserting true would contradict a known space" (guards would reject it).
+  function computeScores(clauses, np, models, pairLits) {
+    const byProp = makeIndex(clauses, np);
+    const n = pairLits.length;
+    const clos = new Array(n);
+    for (let i = 0; i < n; i++) {
+      const [a, b] = pairLits[i];
+      clos[i] = valToModel(propagate(clauses, byProp, np, [a, b ^ 1]).val);
+    }
+
+    const ifFalse = new Array(n).fill(0);
+    for (let j = 0; j < n; j++) {
+      const m = clos[j];
+      let c = 0;
+      for (let i = 0; i < n; i++) {
+        const [x, y] = pairLits[i];
+        if (holdsIn(m, x) && holdsIn(m, y ^ 1)) c++;
+      }
+      ifFalse[j] = c;
+    }
+
+    const ifTrue = new Array(n).fill(0);
+    for (let j = 0; j < n; j++) {
+      const [A, B] = pairLits[j];
+      const clausesJ = clauses.concat([[A ^ 1, B]]);
+      const byPropJ = makeIndex(clausesJ, np);
+      const changed = [];
+      let impossible = false;
+      for (const m of models) {
+        if (holdsIn(m, A ^ 1) || holdsIn(m, B)) continue;          // satisfied
+        const aKnown = m.charCodeAt(A >> 1) !== 63 /* '?' */;
+        const bKnown = m.charCodeAt(B >> 1) !== 63;
+        if (!aKnown && !bKnown) continue;                          // no unit
+        const forced = aKnown ? B : (A ^ 1);
+        const pr = propagate(clausesJ, byPropJ, np, modelToLits(m).concat([forced]));
+        if (pr.contradiction) { impossible = true; break; }
+        changed.push(valToModel(pr.val));
+      }
+      if (impossible) { ifTrue[j] = -1; continue; }
+
+      let score = 0;
+      for (let i = 0; i < n; i++) {
+        const [x, y] = pairLits[i];
+        let settled = false;
+        for (const m of changed) {
+          if (holdsIn(m, x) && holdsIn(m, y ^ 1)) { settled = true; break; }
+        }
+        if (!settled) {
+          const Ci = clos[i];
+          const hasA = holdsIn(Ci, A), hasNB = holdsIn(Ci, B ^ 1);
+          if (hasA && hasNB) settled = true;
+          else if (hasA && Ci.charCodeAt(B >> 1) === 63) {
+            settled = propagate(clauses, byProp, np,
+                                modelToLits(Ci).concat([B])).contradiction;
+          } else if (hasNB && Ci.charCodeAt(A >> 1) === 63) {
+            settled = propagate(clauses, byProp, np,
+                                modelToLits(Ci).concat([A ^ 1])).contradiction;
+          }
+        }
+        if (settled) score++;
+      }
+      ifTrue[j] = score;
+    }
+    return { ifTrue, ifFalse };
+  }
+
+  return { makeIndex, propagate, holdsIn, hasModel, valToModel, modelToLits,
+           recloseModels, computeScores };
 })();
 if (typeof module !== 'undefined') module.exports = PiEngine;
