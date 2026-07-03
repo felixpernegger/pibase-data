@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -q -m 'Open list: sortable '\\\\''solves if true/false'\\\\'' scores, computed in a web worker *)"
+    ]
+  }
+}
