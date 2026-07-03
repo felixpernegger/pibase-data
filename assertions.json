@@ -1,0 +1,41 @@
+[
+  {
+    "if": {
+      "property": "P000163",
+      "value": false
+    },
+    "then": {
+      "property": "P000203",
+      "value": false
+    },
+    "holds": false,
+    "note": "big discrete space with a generic point",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000059",
+      "value": false
+    },
+    "then": {
+      "property": "P000135",
+      "value": true
+    },
+    "holds": false,
+    "note": "discrete space with one generic thingy",
+    "date": "2026-07-03"
+  },
+  {
+    "if": {
+      "property": "P000241",
+      "value": true
+    },
+    "then": {
+      "property": "P000036",
+      "value": true
+    },
+    "holds": false,
+    "note": "two copy of [0,1]",
+    "date": "2026-07-03"
+  }
+]

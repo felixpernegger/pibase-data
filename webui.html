@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pi-base implications</title>
+<script>
+  window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  :root {
+    --fg: #1a1d21; --muted: #6b7280; --line: #e5e7eb; --bg: #f6f7f9;
+    --card: #ffffff; --accent: #2455a4;
+    --true: #1a7f37; --true-hover: #146c2e;
+    --false: #b42318; --false-hover: #9a1c13;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .chip {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 8px 14px; text-align: center; min-width: 96px;
+  }
+  .chip b { display: block; font-size: 20px; }
+  .chip span { font-size: 12px; color: var(--muted); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .impl { font-size: 22px; text-align: center; margin: 8px 0 4px; min-height: 34px; }
+  .impl a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  .impl a:hover { border-bottom-style: solid; }
+  .impl .not { color: var(--false); font-weight: 700; margin-right: 2px; }
+  .impl .arrow { margin: 0 14px; color: var(--muted); }
+  .uids { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 18px; min-height: 20px; }
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  input#note {
+    flex: 1 1 260px; max-width: 420px; padding: 10px 12px; font: inherit;
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  button {
+    font: inherit; font-weight: 600; padding: 10px 22px; border: 0;
+    border-radius: 8px; cursor: pointer; color: #fff; transition: background .15s;
+  }
+  button:disabled { opacity: .45; cursor: default; }
+  #btn-true { background: var(--true); }   #btn-true:hover:enabled { background: var(--true-hover); }
+  #btn-false { background: var(--false); } #btn-false:hover:enabled { background: var(--false-hover); }
+  #btn-random { background: var(--accent); }
+  #btn-random:hover:enabled { background: #1d4685; }
+  #log {
+    white-space: pre-wrap; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+    background: #f0f2f5; border-radius: 8px; padding: 12px; margin-top: 16px;
+    color: var(--muted); display: none;
+  }
+  #log.error { color: var(--false); background: #fdf1f0; }
+  h2 { font-size: 16px; margin: 28px 0 10px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+          border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { padding: 8px 12px; text-align: left; font-size: 14px; border-top: 1px solid var(--line); }
+  th { background: #fafbfc; color: var(--muted); font-weight: 600; border-top: 0; }
+  td a { color: var(--accent); text-decoration: none; }
+  .holds { color: var(--true); font-weight: 600; }
+  .fails { color: var(--false); font-weight: 600; }
+  .note-cell { color: var(--muted); }
+  .rm { background: none; border: 0; color: var(--muted); font-size: 15px; padding: 2px 6px; cursor: pointer; }
+  .rm:hover { color: var(--false); }
+  .empty { color: var(--muted); font-size: 14px; padding: 14px; }
+  #problems { display: none; background: #fdf1f0; border: 1px solid #f0c6c2;
+              color: var(--false); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;
+              font-size: 14px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>pi-base implications</h1>
+  <div class="sub">assert open implications; saved to <code>assertions.json</code>, open list in <code>unknown_pairs.csv</code></div>
+
+  <div id="problems"></div>
+
+  <div class="stats">
+    <div class="chip"><b id="c-unknown">…</b><span>unknown</span></div>
+    <div class="chip"><b id="c-refuted">…</b><span>refuted</span></div>
+    <div class="chip"><b id="c-provable">…</b><span>provable</span></div>
+    <div class="chip"><b id="c-settled">…</b><span id="c-settled-label">settled by you</span></div>
+  </div>
+
+  <div class="card">
+    <div class="impl" id="impl">loading…</div>
+    <div class="uids" id="uids"></div>
+    <div class="controls">
+      <button id="btn-random">Random</button>
+      <input id="note" placeholder="optional note / reference">
+      <button id="btn-true" disabled>True</button>
+      <button id="btn-false" disabled>False</button>
+    </div>
+    <div id="log"></div>
+  </div>
+
+  <h2>your assertions</h2>
+  <div id="assertions"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let pending = null;
+let busy = false;
+
+function typeset(el) {
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {});
+}
+
+async function api(path, body) {
+  const resp = await fetch(path, body === undefined ? {} : {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || resp.statusText);
+  return data;
+}
+
+function litSpan(lit) {
+  const span = document.createElement('span');
+  if (!lit.value) {
+    const not = document.createElement('span');
+    not.className = 'not';
+    not.textContent = '¬';
+    span.appendChild(not);
+  }
+  const a = document.createElement('a');
+  a.href = 'https://topology.pi-base.org/properties/' + lit.uid;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.textContent = lit.name;
+  span.appendChild(a);
+  return span;
+}
+
+function showLog(text, isError) {
+  const log = $('log');
+  log.textContent = text;
+  log.className = isError ? 'error' : '';
+  log.style.display = text ? 'block' : 'none';
+}
+
+function setButtons() {
+  $('btn-true').disabled = $('btn-false').disabled = busy || !pending;
+  $('btn-random').disabled = busy;
+}
+
+function renderPending() {
+  const impl = $('impl');
+  impl.textContent = '';
+  if (!pending) {
+    impl.textContent = 'no unknown implications left!';
+    $('uids').textContent = '';
+    return;
+  }
+  impl.appendChild(litSpan(pending.if));
+  const arrow = document.createElement('span');
+  arrow.className = 'arrow';
+  arrow.textContent = '⇒';
+  impl.appendChild(arrow);
+  impl.appendChild(litSpan(pending.then));
+  $('uids').textContent =
+    (pending.if.value ? '' : '~') + pending.if.uid + '  ⇒  ' +
+    (pending.then.value ? '' : '~') + pending.then.uid;
+  typeset(impl);
+}
+
+function applyState(s) {
+  $('c-unknown').textContent = s.counts.unknown.toLocaleString();
+  $('c-refuted').textContent = s.counts.refuted.toLocaleString();
+  $('c-provable').textContent = s.counts.provable.toLocaleString();
+  $('c-settled').textContent = s.settled.toLocaleString();
+  $('c-settled-label').textContent =
+    'settled by your ' + s.assertions.length + ' assertion' + (s.assertions.length === 1 ? '' : 's');
+  const box = $('problems');
+  box.textContent = s.problems.join('\n');
+  box.style.display = s.problems.length ? 'block' : 'none';
+
+  const holder = $('assertions');
+  holder.textContent = '';
+  if (!s.assertions.length) {
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = 'none yet — draw a random implication and give a verdict';
+    holder.appendChild(div);
+    return;
+  }
+  const table = document.createElement('table');
+  table.innerHTML = '<tr><th>#</th><th>statement</th><th>verdict</th><th>note</th><th>date</th><th></th></tr>';
+  for (const a of s.assertions) {
+    const tr = document.createElement('tr');
+    const td = () => tr.insertCell();
+    td().textContent = a.index;
+    const stmt = td();
+    stmt.appendChild(litSpan(a.if));
+    stmt.appendChild(document.createTextNode(' ⇒ '));
+    stmt.appendChild(litSpan(a.then));
+    const verdict = td();
+    verdict.textContent = a.holds ? 'holds' : 'fails';
+    verdict.className = a.holds ? 'holds' : 'fails';
+    const note = td();
+    note.textContent = a.note;
+    note.className = 'note-cell';
+    td().textContent = a.date;
+    const rm = document.createElement('button');
+    rm.className = 'rm';
+    rm.textContent = '✕';
+    rm.title = 'remove this assertion';
+    rm.onclick = () => removeAssertion(a.index);
+    td().appendChild(rm);
+    table.appendChild(tr);
+  }
+  holder.appendChild(table);
+  typeset(holder);
+}
+
+async function refreshState() {
+  applyState(await api('/api/state'));
+}
+
+async function drawRandom() {
+  busy = true; setButtons();
+  $('impl').textContent = 'drawing…';
+  $('uids').textContent = '';
+  try {
+    const r = await api('/api/random');
+    pending = r.done ? null : r;
+    renderPending();
+  } catch (e) {
+    pending = null;
+    showLog(String(e.message || e), true);
+    renderPending();
+  }
+  busy = false; setButtons();
+}
+
+async function verdict(holds) {
+  if (!pending || busy) return;
+  busy = true; setButtons();
+  showLog('saving and refreshing the open list …', false);
+  try {
+    const r = await api('/api/assert', {
+      if: { uid: pending.if.uid, value: pending.if.value },
+      then: { uid: pending.then.uid, value: pending.then.value },
+      holds: holds,
+      note: $('note').value.trim(),
+    });
+    showLog(r.log, false);
+    $('note').value = '';
+    applyState(r.state);
+    pending = null;
+    busy = false;
+    await drawRandom();
+  } catch (e) {
+    showLog(String(e.message || e), true);
+    busy = false; setButtons();
+  }
+}
+
+async function removeAssertion(index) {
+  if (busy) return;
+  busy = true; setButtons();
+  showLog('removing and refreshing the open list …', false);
+  try {
+    const r = await api('/api/remove', { index: index });
+    showLog(r.log, false);
+    applyState(r.state);
+  } catch (e) {
+    showLog(String(e.message || e), true);
+  }
+  busy = false; setButtons();
+}
+
+$('btn-random').onclick = drawRandom;
+$('btn-true').onclick = () => verdict(true);
+$('btn-false').onclick = () => verdict(false);
+
+refreshState().then(drawRandom).catch(e => showLog(String(e.message || e), true));
+</script>
+</body>
+</html>
