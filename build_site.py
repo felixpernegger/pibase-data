@@ -77,6 +77,20 @@ def main():
     def model(val):
         return "".join("?" if v is None else ("1" if v else "0") for v in val)
 
+    # implications provable with the accepted assertions but NOT from the
+    # pi-base data alone: base-unknown pairs the full prover settles as true
+    _, _, spaces = engine.data
+    base_with = deduce.literal_bitsets(
+        engine.base_prover,
+        list(deduce.close_spaces(engine.base_prover, spaces).values()))
+    _, base_unknown = deduce.classify_pairs(engine.base_prover, base_with)
+    new_true = []
+    for a, b in base_unknown:
+        _, contradiction = engine.prover.propagate([a, b ^ 1])
+        if contradiction:
+            new_true.append({"if": lit(*engine.prover.unlit(a)),
+                             "then": lit(*engine.prover.unlit(b))})
+
     snames = space_names()
     model_meta = ([{"kind": "space", "uid": sid, "name": snames.get(sid, sid)}
                    for sid in sorted(engine.space_vals)]
@@ -98,6 +112,7 @@ def main():
         "models": [model(v) for v in engine.space_vals.values()]
                   + [model(v) for _, v in engine.virtual_vals],
         "model_meta": model_meta,
+        "new_true": new_true,
     }
 
     OUT.mkdir(exist_ok=True)
