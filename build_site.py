@@ -17,7 +17,16 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
+import deduce
 import implications
+
+
+def space_names():
+    names = {}
+    for d in sorted((Path(__file__).resolve().parent / "spaces").glob("S*")):
+        fm = deduce.frontmatter(d / "README.md")
+        names[fm["uid"]] = fm["name"]
+    return names
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
@@ -68,6 +77,13 @@ def main():
     def model(val):
         return "".join("?" if v is None else ("1" if v else "0") for v in val)
 
+    snames = space_names()
+    model_meta = ([{"kind": "space", "uid": sid, "name": snames.get(sid, sid)}
+                   for sid in sorted(engine.space_vals)]
+                  + [{"kind": "assertion",
+                      "index": int(label.split("#")[1])}
+                     for label, _ in engine.virtual_vals])
+
     data = {
         "repo": slug,
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
@@ -76,9 +92,12 @@ def main():
         "assertions": assertions,
         "pairs": pairs,
         "prop_ids": engine.prover.prop_ids,
+        "prop_names": [engine.props[u] for u in engine.prover.prop_ids],
         "clauses": [list(c) for c in engine.prover.clauses],
+        "clause_ids": engine.clause_ids,
         "models": [model(v) for v in engine.space_vals.values()]
                   + [model(v) for _, v in engine.virtual_vals],
+        "model_meta": model_meta,
     }
 
     OUT.mkdir(exist_ok=True)

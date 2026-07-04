@@ -49,6 +49,73 @@ const PiEngine = (() => {
     return { val, contradiction: false };
   }
 
+  // Like propagate, but tracks which clause forced each assignment so a
+  // contradiction can be explained. Returns {val, contradiction, used} where
+  // used is the list of clause indices involved in the contradiction.
+  function propagateProof(clauses, byProp, np, literals) {
+    const val = new Array(np).fill(null);
+    const reason = new Array(np).fill(-1); // forcing clause index; -1 = given
+    const queue = [];
+    let conflict = null; // {clause: index|-1, prop: index|-1}
+
+    function assign(lit, ci) {
+      const p = lit >> 1, v = (lit & 1) === 0;
+      if (val[p] === null) { val[p] = v; reason[p] = ci; queue.push(p); return true; }
+      if (val[p] === v) return true;
+      conflict = { clause: ci, prop: p };
+      return false;
+    }
+
+    function result(contradiction) {
+      const used = new Set();
+      if (contradiction && conflict) {
+        const stack = [];
+        if (conflict.clause >= 0) {
+          used.add(conflict.clause);
+          for (const lit of clauses[conflict.clause]) stack.push(lit >> 1);
+        }
+        if (conflict.prop >= 0) stack.push(conflict.prop);
+        const seen = new Set();
+        while (stack.length) {
+          const p = stack.pop();
+          if (seen.has(p)) continue;
+          seen.add(p);
+          const r = reason[p];
+          if (r >= 0) {
+            used.add(r);
+            for (const lit of clauses[r]) stack.push(lit >> 1);
+          }
+        }
+      }
+      return { val, contradiction, used: [...used] };
+    }
+
+    for (const lit of literals) {
+      if (!assign(lit, -1)) return result(true);
+    }
+    while (queue.length) {
+      const p = queue.shift();
+      for (const ci of byProp[p]) {
+        const clause = clauses[ci];
+        let unknown = null, satisfied = false, twoUnknown = false;
+        for (const lit of clause) {
+          const v = val[lit >> 1];
+          if (v === null) {
+            if (unknown !== null) { twoUnknown = true; break; }
+            unknown = lit;
+          } else if (v === ((lit & 1) === 0)) {
+            satisfied = true;
+            break;
+          }
+        }
+        if (satisfied || twoUnknown) continue;
+        if (unknown === null) { conflict = { clause: ci, prop: -1 }; return result(true); }
+        if (!assign(unknown, ci)) return result(true);
+      }
+    }
+    return result(false);
+  }
+
   // Does the literal hold in the model string?
   function holdsIn(model, lit) {
     return model.charCodeAt(lit >> 1) === ((lit & 1) === 0 ? 49 /*'1'*/ : 48 /*'0'*/);
@@ -170,7 +237,7 @@ const PiEngine = (() => {
     return { ifTrue, ifFalse };
   }
 
-  return { makeIndex, propagate, holdsIn, hasModel, valToModel, modelToLits,
-           recloseModels, computeScores };
+  return { makeIndex, propagate, propagateProof, holdsIn, hasModel, valToModel,
+           modelToLits, recloseModels, computeScores };
 })();
 if (typeof module !== 'undefined') module.exports = PiEngine;

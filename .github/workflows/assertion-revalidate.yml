@@ -1,0 +1,42 @@
+name: revalidate assertions
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  revalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Revalidate all open assertion issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          for N in $(gh issue list -R "$REPO" -l assertion -s open --json number --jq '.[].number'); do
+            BODY=$(gh issue view "$N" -R "$REPO" --json body --jq .body)
+            if ISSUE_BODY="$BODY" python scripts/assertion_issue.py validate > comment.md; then
+              NEW=valid; OLD=invalid
+            else
+              NEW=invalid; OLD=valid
+            fi
+            HAS=$(gh issue view "$N" -R "$REPO" --json labels --jq "[.labels[].name] | contains([\"$NEW\"])")
+            if [ "$HAS" != "true" ]; then
+              gh issue edit "$N" -R "$REPO" --add-label "$NEW" --remove-label "$OLD" 2>/dev/null || true
+              { echo "Re-checked after a data update:"; echo; cat comment.md; } > comment2.md
+              gh issue comment "$N" -R "$REPO" --body-file comment2.md
+              echo "issue #$N: now $NEW"
+            else
+              echo "issue #$N: still $NEW"
+            fi
+          done

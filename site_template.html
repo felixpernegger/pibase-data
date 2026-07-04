@@ -114,6 +114,20 @@
   .assert-panel .cancel { background: var(--muted); }
   footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
   footer a { color: var(--accent); }
+  label.neg { font-size: 18px; font-weight: 700; color: var(--false); user-select: none; }
+  #check-a, #check-b {
+    flex: 1 1 200px; max-width: 300px; padding: 10px 12px; font: inherit;
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  #btn-check { background: var(--accent); }
+  #btn-check:hover:enabled { background: #1d4685; }
+  #check-result { margin-top: 18px; }
+  .verdict-line { font-size: 17px; text-align: center; margin-bottom: 10px; }
+  .verdict-line .v-provable { color: var(--true); font-weight: 700; }
+  .verdict-line .v-refuted { color: var(--false); font-weight: 700; }
+  .verdict-line .v-open { color: var(--accent); font-weight: 700; }
+  .because { color: var(--muted); font-size: 14px; text-align: center; }
+  .because a { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -138,6 +152,7 @@
   <div class="tabs">
     <button class="tab active" id="tab-btn-assert">Random</button>
     <button class="tab" id="tab-btn-list">Open list</button>
+    <button class="tab" id="tab-btn-check">Check</button>
     <button id="btn-submit" disabled>Submit (0)</button>
   </div>
 
@@ -173,6 +188,24 @@
     <div id="list-holder"><div class="empty">loading…</div></div>
   </section>
 
+  <section id="tab-check" hidden>
+  <div class="card">
+    <div class="sub" style="text-align:center">check any implication between two properties —
+      the engine explains why it holds, gives a counterexample, or lets you assert it</div>
+    <div class="controls">
+      <label class="neg"><input type="checkbox" id="check-nega"> ¬</label>
+      <input id="check-a" list="prop-list" placeholder="property A (name or P48)">
+      <span class="arrow" style="font-size:20px">⇒</span>
+      <label class="neg"><input type="checkbox" id="check-negb"> ¬</label>
+      <input id="check-b" list="prop-list" placeholder="property B">
+      <button id="btn-check">Check</button>
+    </div>
+    <div id="check-result"></div>
+    <div id="check-log" class="logbox"></div>
+  </div>
+  </section>
+  <datalist id="prop-list"></datalist>
+
   <footer>
     generated <span id="generated">…</span> from
     <a href="https://github.com/__REPO__" target="_blank" rel="noopener">__REPO__</a>
@@ -197,6 +230,8 @@ let adjCounts = null;    // counts after applying LOCAL
 let pending = null;      // pair shown on the Random card
 let CLAUSES = null;      // clause set incl. local true assertions
 let MODELS = null;       // space models incl. local virtual counterexamples
+let CLAUSEMETA = null;   // per clause: "T000123" | "assertion #i" | {local: a}
+let MODELMETA = null;    // per model: {kind:'space'|'assertion'} | {local: a}
 let SCORES = null;       // {ifTrue, ifFalse} aligned with openPairs
 let scoreJob = 0;
 let scoreWorker = null;
@@ -292,6 +327,8 @@ function recompute() {
   const np = DATA.prop_ids.length;
   let clauses = DATA.clauses.slice();
   let models = DATA.models.slice();
+  const clauseMeta = DATA.clause_ids.slice();
+  const modelMeta = DATA.model_meta.slice();
   const kept = [], notices = [];
 
   for (const a of LOCAL) {
@@ -318,10 +355,12 @@ function recompute() {
       } else {
         clauses = newClauses;
         models = newModels;
+        clauseMeta.push({ local: a });
         kept.push(a);
       }
     } else {
       models.push(PiEngine.valToModel(pr.val));
+      modelMeta.push({ local: a });
       kept.push(a);
     }
   }
@@ -343,6 +382,8 @@ function recompute() {
   };
   CLAUSES = clauses;
   MODELS = models;
+  CLAUSEMETA = clauseMeta;
+  MODELMETA = modelMeta;
   return notices;
 }
 
@@ -565,6 +606,218 @@ function verdict(holds) {
   }
 }
 
+// ------------------------------------------------ check tab
+
+function normName(s) {
+  return s.toLowerCase().replace(/[\\${}]/g, '').trim();
+}
+
+function resolveProp(text) {
+  text = text.trim();
+  if (!text) throw new Error('enter a property (name or P-number)');
+  let m = text.match(/\(P(\d+)\)\s*$/) || text.match(/^P0*(\d+)$/i);
+  if (m) {
+    const uid = 'P' + String(parseInt(m[1], 10)).padStart(6, '0');
+    const i = LITIDX.get(uid);
+    if (i === undefined) throw new Error('unknown property ' + uid);
+    return i;
+  }
+  const needle = normName(text);
+  const hits = [];
+  DATA.prop_names.forEach((name, i) => {
+    if (normName(name).includes(needle)) hits.push(i);
+  });
+  const exact = hits.filter(i => normName(DATA.prop_names[i]) === needle);
+  if (exact.length === 1) return exact[0];
+  if (hits.length === 1) return hits[0];
+  if (hits.length === 0) throw new Error('no property matches "' + text + '"');
+  throw new Error('"' + text + '" is ambiguous: '
+    + hits.slice(0, 4).map(i => DATA.prop_names[i] + ' (P' + parseInt(DATA.prop_ids[i].slice(1), 10) + ')').join(', ')
+    + (hits.length > 4 ? ', …' : ''));
+}
+
+function litObj(lit) {
+  return { uid: DATA.prop_ids[lit >> 1], value: (lit & 1) === 0,
+           name: DATA.prop_names[lit >> 1] };
+}
+
+function localStmtSpan(a) {
+  const span = document.createElement('span');
+  span.appendChild(litSpan(a.if));
+  span.appendChild(document.createTextNode(' ⇒ '));
+  span.appendChild(litSpan(a.then));
+  return span;
+}
+
+function clauseRefSpan(ci) {
+  const meta = CLAUSEMETA[ci];
+  const span = document.createElement('span');
+  if (typeof meta === 'string' && meta[0] === 'T') {
+    const a = document.createElement('a');
+    a.href = 'https://topology.pi-base.org/theorems/' + meta;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = 'T' + parseInt(meta.slice(1), 10);
+    span.appendChild(a);
+  } else if (typeof meta === 'string') {
+    const k = parseInt(meta.split('#')[1], 10);
+    span.appendChild(document.createTextNode('accepted assertion ('));
+    span.appendChild(localStmtSpan(DATA.assertions[k]));
+    span.appendChild(document.createTextNode(' is ' + DATA.assertions[k].holds + ')'));
+  } else {
+    span.appendChild(document.createTextNode('your local assertion ('));
+    span.appendChild(localStmtSpan(meta.local));
+    span.appendChild(document.createTextNode(' is ' + meta.local.holds + ')'));
+  }
+  return span;
+}
+
+function modelRefSpan(mi) {
+  const meta = MODELMETA[mi];
+  const span = document.createElement('span');
+  if (meta.kind === 'space') {
+    const a = document.createElement('a');
+    a.href = 'https://topology.pi-base.org/spaces/' + meta.uid;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = meta.name;
+    span.appendChild(a);
+    span.appendChild(document.createTextNode(' (' + meta.uid + ')'));
+  } else if (meta.kind === 'assertion') {
+    span.appendChild(document.createTextNode('the accepted assertion that '));
+    span.appendChild(localStmtSpan(DATA.assertions[meta.index]));
+    span.appendChild(document.createTextNode(' fails'));
+  } else {
+    span.appendChild(document.createTextNode('your local assertion that '));
+    span.appendChild(localStmtSpan(meta.local));
+    span.appendChild(document.createTextNode(' fails'));
+  }
+  return span;
+}
+
+function doCheck() {
+  const box = $('check-result');
+  box.textContent = '';
+  showLog('', false, $('check-log'));
+  let a, b;
+  try {
+    a = resolveProp($('check-a').value) * 2 + ($('check-nega').checked ? 1 : 0);
+    b = resolveProp($('check-b').value) * 2 + ($('check-negb').checked ? 1 : 0);
+  } catch (e) {
+    showLog(String(e.message || e), true, $('check-log'));
+    return;
+  }
+  const pair = { if: litObj(a), then: litObj(b) };
+
+  const head = document.createElement('div');
+  head.className = 'verdict-line';
+  head.appendChild(litSpan(pair.if));
+  const arrow = document.createElement('span');
+  arrow.className = 'arrow';
+  arrow.textContent = '⇒';
+  head.appendChild(arrow);
+  head.appendChild(litSpan(pair.then));
+  head.appendChild(document.createTextNode(' — '));
+  const verdict = document.createElement('span');
+  head.appendChild(verdict);
+  box.appendChild(head);
+  const because = document.createElement('div');
+  because.className = 'because';
+  box.appendChild(because);
+
+  const np = DATA.prop_ids.length;
+  let witness = -1;
+  for (let mi = 0; mi < MODELS.length; mi++) {
+    if (PiEngine.holdsIn(MODELS[mi], a) && PiEngine.holdsIn(MODELS[mi], b ^ 1)) {
+      witness = mi;
+      break;
+    }
+  }
+  if (witness >= 0) {
+    verdict.textContent = 'FALSE';
+    verdict.className = 'v-refuted';
+    because.appendChild(document.createTextNode('counterexample: '));
+    because.appendChild(modelRefSpan(witness));
+  } else {
+    const byProp = PiEngine.makeIndex(CLAUSES, np);
+    const pr = PiEngine.propagateProof(CLAUSES, byProp, np, [a, b ^ 1]);
+    if (pr.contradiction) {
+      verdict.textContent = 'TRUE';
+      verdict.className = 'v-provable';
+      const refs = pr.used.sort((x, y) => x - y);
+      because.appendChild(document.createTextNode(
+        refs.length ? 'provable using: ' : 'provable (trivially)'));
+      refs.forEach((ci, k) => {
+        if (k) because.appendChild(document.createTextNode(', '));
+        because.appendChild(clauseRefSpan(ci));
+      });
+    } else {
+      verdict.textContent = 'OPEN';
+      verdict.className = 'v-open';
+      because.appendChild(document.createTextNode(
+        'neither provable nor refuted — know the answer? '));
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      controls.style.marginTop = '12px';
+      const note = document.createElement('input');
+      note.id = 'note-check';
+      note.placeholder = 'note / reference (required)';
+      note.style.cssText = 'flex:1 1 260px;max-width:420px;padding:10px 12px;font:inherit;border:1px solid var(--line);border-radius:8px';
+      controls.appendChild(note);
+      for (const holds of [true, false]) {
+        const btn = document.createElement('button');
+        btn.style.background = holds ? 'var(--true)' : 'var(--false)';
+        btn.textContent = holds ? 'True' : 'False';
+        btn.onclick = () => {
+          if (!note.value.trim()) {
+            showLog('a note (reference / justification) is required', true, $('check-log'));
+            note.focus();
+            return;
+          }
+          LOCAL.push({ if: pair.if, then: pair.then, holds: holds,
+                       note: note.value.trim(),
+                       date: new Date().toISOString().slice(0, 10),
+                       submitted: false });
+          saveLocal();
+          const before = openPairs.length;
+          const notices = recompute();
+          refreshAll();
+          const settled = before - openPairs.length;
+          showLog('applied locally: settled ' + settled + ' open implication'
+            + (settled === 1 ? '' : 's') + '. Press Submit (top right) when '
+            + 'you are done to send your verdicts for review.'
+            + (notices.length ? '\n' + notices.join('\n') : ''),
+            false, $('check-log'));
+          doCheckRefresh(pair);
+        };
+        controls.appendChild(btn);
+      }
+      box.appendChild(controls);
+    }
+  }
+  typeset(box);
+}
+
+// re-run the verdict display after asserting from the check tab
+function doCheckRefresh(pair) {
+  $('check-a').value = pair.if.name + ' (P' + parseInt(pair.if.uid.slice(1), 10) + ')';
+  $('check-nega').checked = !pair.if.value;
+  $('check-b').value = pair.then.name + ' (P' + parseInt(pair.then.uid.slice(1), 10) + ')';
+  $('check-negb').checked = !pair.then.value;
+  const log = $('check-log').textContent;
+  doCheck();
+  showLog(log, false, $('check-log'));
+}
+
+function fillDatalist() {
+  const dl = $('prop-list');
+  DATA.prop_ids.forEach((uid, i) => {
+    const opt = document.createElement('option');
+    opt.value = DATA.prop_names[i] + ' (P' + parseInt(uid.slice(1), 10) + ')';
+    dl.appendChild(opt);
+  });
+}
+
 // ------------------------------------------------ open-list tab
 
 let listBuilt = false;
@@ -573,8 +826,10 @@ let panelRow = null;
 function switchTab(name) {
   $('tab-assert').hidden = name !== 'assert';
   $('tab-list').hidden = name !== 'list';
+  $('tab-check').hidden = name !== 'check';
   $('tab-btn-assert').classList.toggle('active', name === 'assert');
   $('tab-btn-list').classList.toggle('active', name === 'list');
+  $('tab-btn-check').classList.toggle('active', name === 'check');
   if (name === 'list' && !listBuilt) buildList();
 }
 
@@ -680,6 +935,11 @@ function filterList() {
 
 $('tab-btn-assert').onclick = () => switchTab('assert');
 $('tab-btn-list').onclick = () => switchTab('list');
+$('tab-btn-check').onclick = () => switchTab('check');
+$('btn-check').onclick = doCheck;
+for (const id of ['check-a', 'check-b']) {
+  $(id).addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
+}
 $('list-search').addEventListener('input', () => { closePanel(); filterList(); });
 $('btn-random').onclick = () => { showLog('', false); drawRandom(); };
 $('btn-true').onclick = () => verdict(true);
@@ -697,6 +957,7 @@ fetch('data.json')
   .then(d => {
     DATA = d;
     LITIDX = new Map(d.prop_ids.map((uid, i) => [uid, i]));
+    fillDatalist();
     loadLocal();
     const notices = recompute();
     renderStats();

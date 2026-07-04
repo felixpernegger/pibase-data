@@ -78,3 +78,13 @@ jobs:
       contents: read
       pages: write
       id-token: write
+
+  # a newly accepted assertion can make other pending submissions redundant
+  # or contradictory — recheck all open assertion issues
+  revalidate:
+    needs: apply
+    if: needs.apply.outputs.applied == 'true'
+    uses: ./.github/workflows/assertion-revalidate.yml
+    permissions:
+      contents: read
+      issues: write

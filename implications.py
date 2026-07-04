@@ -108,6 +108,9 @@ class Engine:
                   assertion_statement(a)[1])
                  for i, a in enumerate(assertions) if a["holds"]]
         self.prover = deduce.Prover(sorted(self.props), theorems + extra)
+        # clause index -> source id ("T000123" or "assertion #i"), aligned
+        # with self.prover.clauses
+        self.clause_ids = [t[0] for t in theorems + extra]
 
         self.space_vals = {}
         for sid in sorted(spaces):

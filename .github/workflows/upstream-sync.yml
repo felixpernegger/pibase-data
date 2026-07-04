@@ -1,0 +1,88 @@
+name: upstream sync
+on:
+  schedule:
+    - cron: "0 4 * * 1" # Mondays 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs:
+      merged: ${{ steps.merge.outputs.merged }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: Merge upstream pi-base data
+        id: merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/pi-base/data.git
+          git fetch -q upstream main
+
+          BEFORE_SHA=$(git rev-parse HEAD)
+          BEFORE_OPEN=$(python -c "import implications; print(implications.Engine(implications.load_assertions()).classify()[0]['unknown'])")
+
+          if ! git merge --no-edit upstream/main; then
+            git merge --abort
+            gh issue create -R "$REPO" -t "upstream sync failed: merge conflict" \
+              -b "The weekly merge of pi-base/data upstream hit a conflict and was aborted. Please sync manually. Run: ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+            echo "merge conflict — aborted, issue filed" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$(git rev-parse HEAD)" = "$BEFORE_SHA" ]; then
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+            echo "already up to date with upstream" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # refuse to push if upstream data now contradicts the accepted assertions
+          if ! python build_site.py; then
+            gh issue create -R "$REPO" -t "upstream sync failed: data inconsistent with accepted assertions" \
+              -b "After merging pi-base/data upstream, the engine reports contradictions with assertions.json — the merge was NOT pushed. Some accepted assertion is probably now refuted or proved by new upstream data; remove or fix it, then re-run the sync. Run: ${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+            echo "merge OK but data inconsistent with assertions — not pushed, issue filed" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          AFTER_OPEN=$(python -c "import implications; print(implications.Engine(implications.load_assertions()).classify()[0]['unknown'])")
+          git push origin main
+          echo "merged=true" >> "$GITHUB_OUTPUT"
+          echo "merged upstream: open implications $BEFORE_OPEN -> $AFTER_OPEN" >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    needs: sync
+    if: needs.sync.outputs.merged == 'true'
+    uses: ./.github/workflows/website.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+  revalidate:
+    needs: sync
+    if: needs.sync.outputs.merged == 'true'
+    uses: ./.github/workflows/assertion-revalidate.yml
+    permissions:
+      contents: read
+      issues: write
