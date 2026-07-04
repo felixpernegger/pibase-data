@@ -649,6 +649,10 @@ function localStmtSpan(a) {
   return span;
 }
 
+function noteText(a) {
+  return a.note ? ' — “' + a.note + '”' : '';
+}
+
 function clauseRefSpan(ci) {
   const meta = CLAUSEMETA[ci];
   const span = document.createElement('span');
@@ -663,11 +667,13 @@ function clauseRefSpan(ci) {
     const k = parseInt(meta.split('#')[1], 10);
     span.appendChild(document.createTextNode('accepted assertion ('));
     span.appendChild(localStmtSpan(DATA.assertions[k]));
-    span.appendChild(document.createTextNode(' is ' + DATA.assertions[k].holds + ')'));
+    span.appendChild(document.createTextNode(
+      ' is ' + DATA.assertions[k].holds + noteText(DATA.assertions[k]) + ')'));
   } else {
     span.appendChild(document.createTextNode('your local assertion ('));
     span.appendChild(localStmtSpan(meta.local));
-    span.appendChild(document.createTextNode(' is ' + meta.local.holds + ')'));
+    span.appendChild(document.createTextNode(
+      ' is ' + meta.local.holds + noteText(meta.local) + ')'));
   }
   return span;
 }
@@ -686,11 +692,12 @@ function modelRefSpan(mi) {
   } else if (meta.kind === 'assertion') {
     span.appendChild(document.createTextNode('the accepted assertion that '));
     span.appendChild(localStmtSpan(DATA.assertions[meta.index]));
-    span.appendChild(document.createTextNode(' fails'));
+    span.appendChild(document.createTextNode(
+      ' fails' + noteText(DATA.assertions[meta.index])));
   } else {
     span.appendChild(document.createTextNode('your local assertion that '));
     span.appendChild(localStmtSpan(meta.local));
-    span.appendChild(document.createTextNode(' fails'));
+    span.appendChild(document.createTextNode(' fails' + noteText(meta.local)));
   }
   return span;
 }
