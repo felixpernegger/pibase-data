@@ -88,7 +88,7 @@ def parse_batch(body):
 def pretty(statement, props):
     """Statement with property names linked to pi-base, falling back to raw."""
     try:
-        (ua, va), (ub, vb) = implications.parse_statement(statement, props)
+        hyps, concl = implications.parse_statement(statement, props)
     except CommandError:
         return f"`{statement or '?'}`"
 
@@ -96,7 +96,8 @@ def pretty(statement, props):
         return (("" if value else "¬")
                 + f"[{props[uid]}](https://topology.pi-base.org/properties/{uid})")
 
-    return f"{lit(ua, va)} ⇒ {lit(ub, vb)} (`{statement}`)"
+    left = " ∧ ".join(lit(u, v) for u, v in hyps)
+    return f"{left} ⇒ {lit(*concl)} (`{statement}`)"
 
 
 def main():

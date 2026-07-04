@@ -116,8 +116,16 @@
   footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
   footer a { color: var(--accent); }
   label.neg { font-size: 18px; font-weight: 700; color: var(--false); user-select: none; }
-  #check-a, #check-b {
-    flex: 1 1 200px; max-width: 300px; padding: 10px 12px; font: inherit;
+  .modes { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
+  button.mode {
+    background: #eef1f5; color: var(--muted); padding: 5px 14px;
+    font-size: 13px; border-radius: 999px;
+  }
+  button.mode:hover:enabled { background: #e2e6ec; color: var(--fg); }
+  button.mode.active { background: var(--accent); color: #fff; }
+  button.mode.active:hover:enabled { background: var(--accent); }
+  #check-a, #check-a2, #check-b {
+    flex: 1 1 170px; max-width: 260px; padding: 10px 12px; font: inherit;
     border: 1px solid var(--line); border-radius: 8px;
   }
   #btn-check { background: var(--accent); }
@@ -160,6 +168,10 @@
 
   <section id="tab-assert">
   <div class="card">
+    <div class="modes">
+      <button class="mode active" id="rand-mode-1">1 hypothesis</button>
+      <button class="mode" id="rand-mode-2">2 hypotheses</button>
+    </div>
     <div class="impl" id="impl">loading…</div>
     <div class="uids" id="uids"></div>
     <div class="controls">
@@ -183,6 +195,9 @@
 
   <section id="tab-list" hidden>
     <div id="list-controls">
+      <button class="mode active" id="list-mode-1">1 hypothesis</button>
+      <button class="mode" id="list-mode-2">2 hypotheses</button>
+      <button class="mini w" id="btn-resample" hidden>new sample</button>
       <input id="list-search" placeholder="filter by property name or uid (e.g. compact, P16)">
       <span id="list-count"></span>
     </div>
@@ -206,6 +221,9 @@
     <div class="controls">
       <label class="neg"><input type="checkbox" id="check-nega"> ¬</label>
       <input id="check-a" list="prop-list" placeholder="property A (name or P48)">
+      <span style="color:var(--muted);font-size:18px">∧</span>
+      <label class="neg"><input type="checkbox" id="check-nega2"> ¬</label>
+      <input id="check-a2" list="prop-list" placeholder="second property (optional)">
       <span class="arrow" style="font-size:20px">⇒</span>
       <label class="neg"><input type="checkbox" id="check-negb"> ¬</label>
       <input id="check-b" list="prop-list" placeholder="property B">
@@ -241,9 +259,11 @@ let adjCounts = null;    // counts after applying LOCAL
 let pending = null;      // pair shown on the Random card
 let CLAUSES = null;      // clause set incl. local true assertions
 let MODELS = null;       // space models incl. local virtual counterexamples
+let BYPROP = null;       // clause index for CLAUSES
 let CLAUSEMETA = null;   // per clause: "T000123" | "assertion #i" | {local: a}
 let MODELMETA = null;    // per model: {kind:'space'|'assertion'} | {local: a}
 let LOCALTRUE = [];      // open pairs your local assertions made provable
+let PROPSOK = null;      // property indices usable in random draws (no P164)
 let SCORES = null;       // {ifTrue, ifFalse} aligned with openPairs
 let scoreJob = 0;
 let scoreWorker = null;
@@ -255,8 +275,11 @@ function typeset(el) {
 }
 
 function litOf(l) { return LITIDX.get(l.uid) * 2 + (l.value ? 0 : 1); }
+function hypsOf(x) { return Array.isArray(x.if) ? x.if : [x.if]; }
 function shortLit(lit) { return (lit.value ? '' : '~') + 'P' + parseInt(lit.uid.slice(1), 10); }
-function shortStmt(pair) { return shortLit(pair.if) + ' => ' + shortLit(pair.then); }
+function shortStmt(pair) {
+  return hypsOf(pair).map(shortLit).join(' + ') + ' => ' + shortLit(pair.then);
+}
 
 function unsubmitted() { return LOCAL.filter(a => !a.submitted); }
 
@@ -277,7 +300,7 @@ function submitAll() {
   if (!items.length) return;
   let body = 'Verdicts submitted from the website:\n\n';
   items.forEach((a, k) => {
-    body += '**' + (k + 1) + '.** ' + mdLit(a.if) + ' ⇒ ' + mdLit(a.then)
+    body += '**' + (k + 1) + '.** ' + hypsOf(a).map(mdLit).join(' ∧ ') + ' ⇒ ' + mdLit(a.then)
           + ' — **' + a.holds + '**\n\n'
           + 'statement: ' + shortStmt(a) + '\nverdict: ' + a.holds
           + '\nnote: ' + a.note + '\n\n';
@@ -344,10 +367,11 @@ function recompute() {
   const kept = [], notices = [];
 
   for (const a of LOCAL) {
-    const la = litOf(a.if), lb = litOf(a.then);
+    const hy = hypsOf(a).map(litOf), lb = litOf(a.then);
+    const seed = hy.concat([lb ^ 1]);
     const byProp = PiEngine.makeIndex(clauses, np);
-    const refuted = PiEngine.hasModel(models, la, lb ^ 1);
-    const pr = PiEngine.propagate(clauses, byProp, np, [la, lb ^ 1]);
+    const refuted = PiEngine.hasModel(models, seed);
+    const pr = PiEngine.propagate(clauses, byProp, np, seed);
     const s = shortStmt(a) + ' is ' + a.holds;
     if (pr.contradiction && a.holds) {
       notices.push('dropped local assertion (already provable — possibly accepted): ' + s);
@@ -359,7 +383,7 @@ function recompute() {
       notices.push('dropped local assertion (now provable — conflicts with the data): ' + s);
     } else if (a.holds) {
       // new implication: propagate it through every known space/virtual model
-      const newClauses = clauses.concat([[la ^ 1, lb]]);
+      const newClauses = clauses.concat([hy.map(l => l ^ 1).concat([lb])]);
       const newByProp = PiEngine.makeIndex(newClauses, np);
       const newModels = PiEngine.recloseModels(models, newClauses, newByProp, np);
       if (newModels === null) {
@@ -384,7 +408,7 @@ function recompute() {
   let addRef = 0, addProv = 0;
   for (const p of DATA.pairs) {
     const a = litOf(p.if), b = litOf(p.then);
-    if (PiEngine.hasModel(models, a, b ^ 1)) { addRef++; continue; }
+    if (PiEngine.hasModel(models, [a, b ^ 1])) { addRef++; continue; }
     if (PiEngine.propagate(clauses, byProp, np, [a, b ^ 1]).contradiction) {
       addProv++;
       LOCALTRUE.push(p);
@@ -399,9 +423,26 @@ function recompute() {
   };
   CLAUSES = clauses;
   MODELS = models;
+  BYPROP = byProp;
   CLAUSEMETA = clauseMeta;
   MODELMETA = modelMeta;
   return notices;
+}
+
+// current status of any statement under the local view (clauses + models)
+function statusOf(pair) {
+  const seed = hypsOf(pair).map(litOf).concat([litOf(pair.then) ^ 1]);
+  if (PiEngine.hasModel(MODELS, seed)) return 'refuted';
+  if (PiEngine.propagate(CLAUSES, BYPROP, DATA.prop_ids.length, seed).contradiction) {
+    return 'provable';
+  }
+  return 'open';
+}
+
+function drawTriple() {
+  const t = PiEngine.drawOpenTriple(CLAUSES, BYPROP, DATA.prop_ids.length,
+                                    MODELS, PROPSOK);
+  return t ? { if: t.hyps.map(litObj), then: litObj(t.concl) } : null;
 }
 
 // -------------------------------------------- solve-scores (web worker)
@@ -492,21 +533,43 @@ function renderPending() {
     setButtons();
     return;
   }
-  impl.appendChild(litSpan(pending.if));
+  hypsOf(pending).forEach((h, i) => {
+    if (i) {
+      const and = document.createElement('span');
+      and.className = 'arrow';
+      and.textContent = '∧';
+      impl.appendChild(and);
+    }
+    impl.appendChild(litSpan(h));
+  });
   const arrow = document.createElement('span');
   arrow.className = 'arrow';
   arrow.textContent = '⇒';
   impl.appendChild(arrow);
   impl.appendChild(litSpan(pending.then));
-  $('uids').textContent = shortLit(pending.if) + '  ⇒  ' + shortLit(pending.then);
+  $('uids').textContent = shortStmt(pending);
   typeset(impl);
   setButtons();
 }
 
+let RANDMODE = 1;
+
 function drawRandom() {
-  pending = openPairs.length
-    ? openPairs[Math.floor(Math.random() * openPairs.length)] : null;
+  if (RANDMODE === 2) {
+    pending = drawTriple();
+  } else {
+    pending = openPairs.length
+      ? openPairs[Math.floor(Math.random() * openPairs.length)] : null;
+  }
   renderPending();
+}
+
+function setRandMode(m) {
+  RANDMODE = m;
+  $('rand-mode-1').classList.toggle('active', m === 1);
+  $('rand-mode-2').classList.toggle('active', m === 2);
+  showLog('', false);
+  drawRandom();
 }
 
 function renderStats() {
@@ -525,9 +588,7 @@ function assertionTable(rows, removable) {
   rows.forEach((a, i) => {
     const tr = table.insertRow();
     const stmt = tr.insertCell();
-    stmt.appendChild(litSpan(a.if));
-    stmt.appendChild(document.createTextNode(' ⇒ '));
-    stmt.appendChild(litSpan(a.then));
+    stmt.appendChild(localStmtSpan(a));
     const v = tr.insertCell();
     v.textContent = a.holds ? 'holds' : 'fails';
     v.className = a.holds ? 'holds' : 'fails';
@@ -586,7 +647,7 @@ function refreshAll(notices) {
   requestScores();
   listBuilt = false;
   foundBuilt = false;
-  if (!$('tab-list').hidden) buildList();
+  if (!$('tab-list').hidden) buildCurrentList();
   if (!$('tab-found').hidden) buildFound();
   if (pending && !openPairs.includes(pending)) drawRandom();
   if (notices && notices.length) showLog(notices.join('\n'), false);
@@ -599,7 +660,7 @@ function submit(pair, holds, note, logEl) {
     showLog('a note (reference / justification) is required', true, logEl);
     return false;
   }
-  if (!openPairs.includes(pair)) {
+  if (statusOf(pair) !== 'open') {
     showLog('this implication is no longer open (given your local assertions)', true, logEl);
     return false;
   }
@@ -663,7 +724,10 @@ function litObj(lit) {
 
 function localStmtSpan(a) {
   const span = document.createElement('span');
-  span.appendChild(litSpan(a.if));
+  hypsOf(a).forEach((h, i) => {
+    if (i) span.appendChild(document.createTextNode(' ∧ '));
+    span.appendChild(litSpan(h));
+  });
   span.appendChild(document.createTextNode(' ⇒ '));
   span.appendChild(litSpan(a.then));
   return span;
@@ -726,19 +790,36 @@ function doCheck() {
   const box = $('check-result');
   box.textContent = '';
   showLog('', false, $('check-log'));
-  let a, b;
+  const hyps = [];
+  let b;
   try {
-    a = resolveProp($('check-a').value) * 2 + ($('check-nega').checked ? 1 : 0);
+    hyps.push(resolveProp($('check-a').value) * 2 + ($('check-nega').checked ? 1 : 0));
+    if ($('check-a2').value.trim()) {
+      const a2 = resolveProp($('check-a2').value) * 2 + ($('check-nega2').checked ? 1 : 0);
+      if ((a2 >> 1) === (hyps[0] >> 1)) {
+        throw new Error('the two hypotheses must be distinct properties');
+      }
+      hyps.push(a2);
+    }
     b = resolveProp($('check-b').value) * 2 + ($('check-negb').checked ? 1 : 0);
   } catch (e) {
     showLog(String(e.message || e), true, $('check-log'));
     return;
   }
-  const pair = { if: litObj(a), then: litObj(b) };
+  const pair = { if: hyps.length === 1 ? litObj(hyps[0]) : hyps.map(litObj),
+                 then: litObj(b) };
 
   const head = document.createElement('div');
   head.className = 'verdict-line';
-  head.appendChild(litSpan(pair.if));
+  hypsOf(pair).forEach((h, i) => {
+    if (i) {
+      const and = document.createElement('span');
+      and.className = 'arrow';
+      and.textContent = '∧';
+      head.appendChild(and);
+    }
+    head.appendChild(litSpan(h));
+  });
   const arrow = document.createElement('span');
   arrow.className = 'arrow';
   arrow.textContent = '⇒';
@@ -753,9 +834,10 @@ function doCheck() {
   box.appendChild(because);
 
   const np = DATA.prop_ids.length;
+  const seed = hyps.concat([b ^ 1]);
   let witness = -1;
   for (let mi = 0; mi < MODELS.length; mi++) {
-    if (PiEngine.holdsIn(MODELS[mi], a) && PiEngine.holdsIn(MODELS[mi], b ^ 1)) {
+    if (seed.every(l => PiEngine.holdsIn(MODELS[mi], l))) {
       witness = mi;
       break;
     }
@@ -767,7 +849,7 @@ function doCheck() {
     because.appendChild(modelRefSpan(witness));
   } else {
     const byProp = PiEngine.makeIndex(CLAUSES, np);
-    const pr = PiEngine.propagateProof(CLAUSES, byProp, np, [a, b ^ 1]);
+    const pr = PiEngine.propagateProof(CLAUSES, byProp, np, seed);
     if (pr.contradiction) {
       verdict.textContent = 'TRUE';
       verdict.className = 'v-provable';
@@ -826,9 +908,13 @@ function doCheck() {
 }
 
 function setCheckInputs(pair) {
-  $('check-a').value = pair.if.name + ' (P' + parseInt(pair.if.uid.slice(1), 10) + ')';
-  $('check-nega').checked = !pair.if.value;
-  $('check-b').value = pair.then.name + ' (P' + parseInt(pair.then.uid.slice(1), 10) + ')';
+  const fmt = l => l.name + ' (P' + parseInt(l.uid.slice(1), 10) + ')';
+  const hy = hypsOf(pair);
+  $('check-a').value = fmt(hy[0]);
+  $('check-nega').checked = !hy[0].value;
+  $('check-a2').value = hy[1] ? fmt(hy[1]) : '';
+  $('check-nega2').checked = hy[1] ? !hy[1].value : false;
+  $('check-b').value = fmt(pair.then);
   $('check-negb').checked = !pair.then.value;
 }
 
@@ -913,7 +999,7 @@ function switchTab(name) {
     $('tab-' + t).hidden = name !== t;
     $('tab-btn-' + t).classList.toggle('active', name === t);
   }
-  if (name === 'list' && !listBuilt) buildList();
+  if (name === 'list' && !listBuilt) buildCurrentList();
   if (name === 'found' && !foundBuilt) buildFound();
 }
 
@@ -926,7 +1012,7 @@ function openPanel(tr, pair, holds) {
   panelRow = document.createElement('tr');
   panelRow.className = 'assert-panel';
   const td = panelRow.insertCell();
-  td.colSpan = 5;
+  td.colSpan = tr.closest('table').rows[0].cells.length;
 
   const input = document.createElement('input');
   input.placeholder = 'note / reference (required)';
@@ -951,6 +1037,67 @@ function openPanel(tr, pair, holds) {
 }
 
 let ROWS = [];
+let LISTMODE = 1;
+
+function buildCurrentList() {
+  if (LISTMODE === 2) buildList2();
+  else buildList();
+}
+
+function setListMode(m) {
+  LISTMODE = m;
+  $('list-mode-1').classList.toggle('active', m === 1);
+  $('list-mode-2').classList.toggle('active', m === 2);
+  $('btn-resample').hidden = m !== 2;
+  listBuilt = false;
+  buildCurrentList();
+}
+
+// random sample of open two-hypothesis implications
+function buildList2() {
+  listBuilt = true;
+  closePanel();
+  ROWS = [];
+  const holder = $('list-holder');
+  const table = document.createElement('table');
+  table.id = 'list-table';
+  table.innerHTML = '<tr><th>#</th><th>implication</th><th></th></tr>';
+  const seen = new Set();
+  let count = 0;
+  for (let k = 0; k < 400 && count < 100; k++) {
+    const p = drawTriple();
+    if (!p) break;
+    const key = shortStmt(p);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    count++;
+    const tr = table.insertRow();
+    tr.dataset.key = hypsOf(p).concat([p.then])
+      .map(l => l.name + ' ' + l.uid).join(' ').toLowerCase();
+    tr.insertCell().textContent = count;
+    const stmt = tr.insertCell();
+    hypsOf(p).forEach((h, i) => {
+      if (i) stmt.appendChild(document.createTextNode(' ∧ '));
+      stmt.appendChild(litSpan(h));
+    });
+    stmt.appendChild(document.createTextNode(' ⇒ '));
+    stmt.appendChild(litSpan(p.then));
+    const actions = tr.insertCell();
+    actions.className = 'actions';
+    for (const holds of [true, false]) {
+      const btn = document.createElement('button');
+      btn.className = 'mini ' + (holds ? 't' : 'f');
+      btn.textContent = holds ? 'true' : 'false';
+      btn.title = 'assert this implication is ' + holds;
+      btn.onclick = () => openPanel(tr, p, holds);
+      actions.appendChild(btn);
+    }
+  }
+  holder.textContent = '';
+  holder.appendChild(table);
+  filterList();
+  typeset(holder);
+}
 
 function buildList() {
   listBuilt = true;
@@ -1013,8 +1160,10 @@ function filterList() {
     tr.classList.toggle('hide', !hit);
     if (hit) shown++;
   }
+  const what = LISTMODE === 2 ? ' sampled open implications (of ~880k)'
+                              : ' open implications';
   $('list-count').textContent =
-    terms.length ? shown + ' of ' + total + ' open implications' : total + ' open implications';
+    terms.length ? shown + ' of ' + total + what : total + what;
 }
 
 $('tab-btn-assert').onclick = () => switchTab('assert');
@@ -1022,10 +1171,15 @@ $('tab-btn-list').onclick = () => switchTab('list');
 $('tab-btn-check').onclick = () => switchTab('check');
 $('tab-btn-found').onclick = () => switchTab('found');
 $('btn-check').onclick = doCheck;
-for (const id of ['check-a', 'check-b']) {
+for (const id of ['check-a', 'check-a2', 'check-b']) {
   $(id).addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
 }
 $('list-search').addEventListener('input', () => { closePanel(); filterList(); });
+$('rand-mode-1').onclick = () => setRandMode(1);
+$('rand-mode-2').onclick = () => setRandMode(2);
+$('list-mode-1').onclick = () => setListMode(1);
+$('list-mode-2').onclick = () => setListMode(2);
+$('btn-resample').onclick = () => { listBuilt = false; buildList2(); };
 $('btn-random').onclick = () => { showLog('', false); drawRandom(); };
 $('btn-true').onclick = () => verdict(true);
 $('btn-false').onclick = () => verdict(false);
@@ -1042,6 +1196,7 @@ fetch('data.json')
   .then(d => {
     DATA = d;
     LITIDX = new Map(d.prop_ids.map((uid, i) => [uid, i]));
+    PROPSOK = d.prop_ids.map((_, i) => i).filter(i => d.prop_ids[i] !== 'P000164');
     fillDatalist();
     loadLocal();
     const notices = recompute();

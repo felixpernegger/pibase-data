@@ -63,12 +63,14 @@ def save_assertions(assertions):
 
 
 def parse_statement(text, props):
+    """'A => B' or 'A + B => C' -> (hypotheses tuple of (uid, bool), conclusion)."""
     parts = re.split(r"=>|->|⇒", text)
     if len(parts) != 2:
         raise CommandError(
-            f"cannot parse {text!r}: expected 'A => B' (e.g. '~P48 => P16')")
-    lits = []
-    for part in parts:
+            f"cannot parse {text!r}: expected 'A => B' or 'A + B => C' "
+            f"(e.g. '~P48 => P16', 'P8 + P16 => P32')")
+
+    def parse_lit(part):
         m = LIT_RE.match(part)
         if not m:
             raise CommandError(
@@ -76,8 +78,13 @@ def parse_statement(text, props):
         uid = f"P{int(m.group(2)):06d}"
         if uid not in props:
             raise CommandError(f"unknown property {uid}")
-        lits.append((uid, m.group(1) == ""))
-    return tuple(lits)
+        return uid, m.group(1) == ""
+
+    hyps = tuple(parse_lit(p) for p in parts[0].split("+"))
+    concl = parse_lit(parts[1])
+    if len({u for u, _ in hyps}) != len(hyps):
+        raise CommandError("hypotheses must be distinct properties")
+    return hyps, concl
 
 
 def fmt_lit(props, uid, value):
@@ -85,13 +92,21 @@ def fmt_lit(props, uid, value):
 
 
 def fmt_statement(props, stmt):
-    (ua, va), (ub, vb) = stmt
-    return f"{fmt_lit(props, ua, va)}  =>  {fmt_lit(props, ub, vb)}"
+    hyps, concl = stmt
+    left = " + ".join(fmt_lit(props, u, v) for u, v in hyps)
+    return f"{left}  =>  {fmt_lit(props, *concl)}"
 
 
 def assertion_statement(a):
-    return ((a["if"]["property"], a["if"]["value"]),
+    raw = a["if"] if isinstance(a["if"], list) else [a["if"]]
+    return (tuple((h["property"], h["value"]) for h in raw),
             (a["then"]["property"], a["then"]["value"]))
+
+
+def statement_clause(stmt):
+    """The statement's clause as a literal set — its logical-equivalence class."""
+    hyps, concl = stmt
+    return frozenset([(u, not v) for u, v in hyps] + [concl])
 
 
 class Engine:
@@ -104,7 +119,7 @@ class Engine:
         self.problems = []
 
         self.base_prover = deduce.Prover(sorted(self.props), theorems)
-        extra = [(f"assertion #{i}", [assertion_statement(a)[0]],
+        extra = [(f"assertion #{i}", list(assertion_statement(a)[0]),
                   assertion_statement(a)[1])
                  for i, a in enumerate(assertions) if a["holds"]]
         self.prover = deduce.Prover(sorted(self.props), theorems + extra)
@@ -126,8 +141,9 @@ class Engine:
         for i, a in enumerate(assertions):
             if a["holds"]:
                 continue
-            (ua, va), (ub, vb) = assertion_statement(a)
-            lits = [self.prover.lit(ua, va), self.prover.lit(ub, vb) ^ 1]
+            hyps, concl = assertion_statement(a)
+            lits = ([self.prover.lit(u, v) for u, v in hyps]
+                    + [self.prover.lit(*concl) ^ 1])
             val, contradiction = self.prover.propagate(lits)
             if contradiction:
                 self.problems.append(
@@ -153,20 +169,23 @@ class Engine:
 
     def status(self, stmt):
         """-> (kind, detail): kind in {'provable', 'refuted', 'unknown'}."""
-        (ua, va), (ub, vb) = stmt
-        a = self.prover.lit(ua, va)
-        b = self.prover.lit(ub, vb)
+        hyps, concl = stmt
+        seed = ([self.prover.lit(u, v) for u, v in hyps]
+                + [self.prover.lit(*concl) ^ 1])
+
+        def witnesses(val):
+            return all(val[l >> 1] == ((l & 1) == 0) for l in seed)
 
         for sid, val in self.space_vals.items():
-            if val[a >> 1] == ((a & 1) == 0) and val[b >> 1] == ((b & 1) != 0):
+            if witnesses(val):
                 return "refuted", f"counterexample {sid}"
         for label, val in self.virtual_vals:
-            if val[a >> 1] == ((a & 1) == 0) and val[b >> 1] == ((b & 1) != 0):
+            if witnesses(val):
                 return "refuted", f"your false-{label}"
 
-        _, contradiction = self.prover.propagate([a, b ^ 1])
+        _, contradiction = self.prover.propagate(seed)
         if contradiction:
-            _, base = self.base_prover.propagate([a, b ^ 1])
+            _, base = self.base_prover.propagate(seed)
             return "provable", ("by pi-base theorems alone" if base
                                 else "using your true-assertions")
         return "unknown", (f"no proof, no counterexample among "
@@ -201,12 +220,13 @@ def do_assert(engine, statement_text, verdict, note, save=True):
             "add it after true/false")
     note = note.strip()
     stmt = parse_statement(statement_text, engine.props)
-    (ua, va), (ub, vb) = stmt
+    hyps, concl = stmt
 
-    # duplicate / conflict against saved assertions (modulo contrapositive)
-    contrapositive = ((ub, not vb), (ua, not va))
+    # duplicate / conflict against saved assertions (modulo logical equivalence:
+    # statements with the same clause, e.g. contrapositives, are the same)
+    clause = statement_clause(stmt)
     for i, a in enumerate(engine.assertions):
-        if assertion_statement(a) in (stmt, contrapositive):
+        if statement_clause(assertion_statement(a)) == clause:
             if a["holds"] == holds:
                 raise CommandError(f"already asserted as #{i}, nothing to do")
             raise CommandError(
@@ -228,8 +248,9 @@ def do_assert(engine, statement_text, verdict, note, save=True):
         raise CommandError(
             "REFUSED: you assert it fails, but the engine proves it — resolve first")
 
-    entry = {"if": {"property": ua, "value": va},
-             "then": {"property": ub, "value": vb},
+    hyps_json = [{"property": u, "value": v} for u, v in hyps]
+    entry = {"if": hyps_json[0] if len(hyps_json) == 1 else hyps_json,
+             "then": {"property": concl[0], "value": concl[1]},
              "holds": holds, "note": note, "date": date.today().isoformat()}
     trial = Engine(engine.assertions + [entry], engine.data)
     new_problems = [p for p in trial.problems if p not in engine.problems]
@@ -293,7 +314,12 @@ def do_unknown(engine):
 
 
 def short_statement(stmt):
-    return " => ".join(f"{'' if v else '~'}P{int(u[1:])}" for u, v in stmt)
+    hyps, concl = stmt
+
+    def s(u, v):
+        return f"{'' if v else '~'}P{int(u[1:])}"
+
+    return " + ".join(s(u, v) for u, v in hyps) + " => " + s(*concl)
 
 
 def do_random(engine, interactive=False):
@@ -305,7 +331,7 @@ def do_random(engine, interactive=False):
     a, b = random.choice(unknown)
     ua, va = engine.prover.unlit(a)
     ub, vb = engine.prover.unlit(b)
-    stmt = ((ua, va), (ub, vb))
+    stmt = (((ua, va),), (ub, vb))
     hint = ("reply 'true NOTE' or 'false NOTE' to save, "
             "or 'random' for another" if interactive
             else f"settle it with: assert {short_statement(stmt)} true|false")

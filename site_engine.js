@@ -121,10 +121,15 @@ const PiEngine = (() => {
     return model.charCodeAt(lit >> 1) === ((lit & 1) === 0 ? 49 /*'1'*/ : 48 /*'0'*/);
   }
 
-  // Is there a model where both literals hold? (counterexample check: pass a, ~b)
-  function hasModel(models, litA, litB) {
+  // Is there a model where all the literals hold? (counterexample check:
+  // pass the hypotheses plus the negated conclusion)
+  function hasModel(models, lits) {
     for (const m of models) {
-      if (holdsIn(m, litA) && holdsIn(m, litB)) return true;
+      let all = true;
+      for (const lit of lits) {
+        if (!holdsIn(m, lit)) { all = false; break; }
+      }
+      if (all) return true;
     }
     return false;
   }
@@ -157,6 +162,39 @@ const PiEngine = (() => {
       out.push(valToModel(pr.val));
     }
     return out;
+  }
+
+  // Canonical statement of a clause (array of literals): the displayed form
+  // with the fewest negations — conclusion = smallest positive literal if the
+  // clause has one, else smallest literal; hypotheses = the rest, negated.
+  function canonicalStatement(clause) {
+    const pos = clause.filter(l => !(l & 1));
+    const concl = pos.length ? Math.min(...pos) : Math.min(...clause);
+    const hyps = clause.filter(l => l !== concl).map(l => l ^ 1).sort((a, b) => a - b);
+    return { hyps, concl };
+  }
+
+  // Rejection-sample a random open two-hypothesis statement A ∧ B ⇒ C:
+  // canonical form, not refuted by a model, not provable, hypotheses
+  // independent (neither A⇒B nor B⇒A provable), properties from propsOk.
+  function drawOpenTriple(clauses, byProp, np, models, propsOk, maxTries) {
+    for (let t = 0; t < (maxTries || 2000); t++) {
+      const picked = [];
+      while (picked.length < 3) {
+        const p = propsOk[Math.floor(Math.random() * propsOk.length)];
+        if (!picked.includes(p)) picked.push(p);
+      }
+      const clause = picked.map(p => 2 * p + (Math.random() < 0.5 ? 1 : 0));
+      const { hyps, concl } = canonicalStatement(clause);
+      const seed = hyps.concat([concl ^ 1]);
+      if (hasModel(models, seed)) continue;                       // refuted
+      if (propagate(clauses, byProp, np, seed).contradiction) continue; // provable
+      const [A, B] = hyps;
+      if (propagate(clauses, byProp, np, [A, B ^ 1]).contradiction) continue;
+      if (propagate(clauses, byProp, np, [B, A ^ 1]).contradiction) continue;
+      return { hyps, concl };
+    }
+    return null;
   }
 
   // For every open pair, how many open pairs (incl. itself) a true resp.
@@ -238,6 +276,7 @@ const PiEngine = (() => {
   }
 
   return { makeIndex, propagate, propagateProof, holdsIn, hasModel, valToModel,
-           modelToLits, recloseModels, computeScores };
+           modelToLits, recloseModels, computeScores, canonicalStatement,
+           drawOpenTriple };
 })();
 if (typeof module !== 'undefined') module.exports = PiEngine;

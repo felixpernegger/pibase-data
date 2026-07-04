@@ -64,8 +64,13 @@ def main():
         ub, vb = engine.prover.unlit(b)
         pairs.append({"if": lit(ua, va), "then": lit(ub, vb)})
 
+    def lit_atoms(raw):
+        atoms = raw if isinstance(raw, list) else [raw]
+        out = [lit(h["property"], h["value"]) for h in atoms]
+        return out[0] if len(out) == 1 else out
+
     assertions = [
-        {"if": lit(x["if"]["property"], x["if"]["value"]),
+        {"if": lit_atoms(x["if"]),
          "then": lit(x["then"]["property"], x["then"]["value"]),
          "holds": x["holds"], "note": x.get("note", ""), "date": x["date"]}
         for x in engine.assertions]

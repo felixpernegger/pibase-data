@@ -92,7 +92,7 @@ class State:
         return {"if": self.lit_json(ua, va), "then": self.lit_json(ub, vb)}
 
     def assert_json(self, body):
-        stmt = ((body["if"]["uid"], bool(body["if"]["value"])),
+        stmt = (((body["if"]["uid"], bool(body["if"]["value"])),),
                 (body["then"]["uid"], bool(body["then"]["value"])))
         verdict = "true" if body["holds"] else "false"
         log = io.StringIO()
