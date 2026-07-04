@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -q -m 'Open list: sortable '\\\\''solves if true/false'\\\\'' scores, computed in a web worker *)"
+      "Bash(git commit -q -m 'Open list: sortable '\\\\''solves if true/false'\\\\'' scores, computed in a web worker *)",
+      "Bash(git commit -q -m 'Issue bodies and bot comments: property names linked to pi-base *)",
+      "Bash(node -e ' *)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
