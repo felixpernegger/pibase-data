@@ -85,6 +85,20 @@ def parse_batch(body):
              c.get("note", "")) for c in items]
 
 
+def pretty(statement, props):
+    """Statement with property names linked to pi-base, falling back to raw."""
+    try:
+        (ua, va), (ub, vb) = implications.parse_statement(statement, props)
+    except CommandError:
+        return f"`{statement or '?'}`"
+
+    def lit(uid, value):
+        return (("" if value else "¬")
+                + f"[{props[uid]}](https://topology.pi-base.org/properties/{uid})")
+
+    return f"{lit(ua, va)} ⇒ {lit(ub, vb)} (`{statement}`)"
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else ""
     if mode not in ("validate", "apply"):
@@ -111,7 +125,7 @@ def main():
 
     results, ok = [], 0
     for statement, verdict, note in items:
-        label = f"`{statement or '?'}` is `{verdict or '?'}`"
+        label = f"{pretty(statement, engine.props)} is `{verdict or '?'}`"
         if verdict not in ("true", "false"):
             results.append(f"❌ {label} — missing or invalid verdict")
             continue

@@ -220,14 +220,21 @@ function updateSubmit() {
   btn.disabled = n === 0;
 }
 
+function mdLit(lit) {
+  return (lit.value ? '' : '¬') + '[' + lit.name
+    + '](https://topology.pi-base.org/properties/' + lit.uid + ')';
+}
+
 function submitAll() {
   const items = unsubmitted();
   if (!items.length) return;
   let body = 'Verdicts submitted from the website:\n\n';
-  for (const a of items) {
-    body += 'statement: ' + shortStmt(a) + '\nverdict: ' + a.holds
+  items.forEach((a, k) => {
+    body += '**' + (k + 1) + '.** ' + mdLit(a.if) + ' ⇒ ' + mdLit(a.then)
+          + ' — **' + a.holds + '**\n\n'
+          + 'statement: ' + shortStmt(a) + '\nverdict: ' + a.holds
           + '\nnote: ' + a.note + '\n\n';
-  }
+  });
   const url = 'https://github.com/' + REPO + '/issues/new'
     + '?title=' + encodeURIComponent('[assertion' + (items.length === 1 ? '' : 's')
         + '] ' + items.length + ' verdict' + (items.length === 1 ? '' : 's')
