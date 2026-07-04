@@ -102,6 +102,7 @@
   .mini { padding: 3px 12px; font-size: 13px; border-radius: 6px; margin-right: 4px; }
   .mini.t { background: var(--true); }  .mini.t:hover:enabled { background: var(--true-hover); }
   .mini.f { background: var(--false); } .mini.f:hover:enabled { background: var(--false-hover); }
+  .mini.w { background: var(--accent); } .mini.w:hover:enabled { background: #1d4685; }
   .actions { white-space: nowrap; text-align: right; }
   .assert-panel td { background: #fafbfc; }
   .assert-panel input {
@@ -153,6 +154,7 @@
     <button class="tab active" id="tab-btn-assert">Random</button>
     <button class="tab" id="tab-btn-list">Open list</button>
     <button class="tab" id="tab-btn-check">Check</button>
+    <button class="tab" id="tab-btn-found">True found</button>
     <button id="btn-submit" disabled>Submit (0)</button>
   </div>
 
@@ -186,6 +188,15 @@
     </div>
     <div id="list-log" class="logbox"></div>
     <div id="list-holder"><div class="empty">loading…</div></div>
+  </section>
+
+  <section id="tab-found" hidden>
+    <div class="sub">implications now known to be <b>true</b> thanks to assertions
+      collected on this website, but not derivable from
+      <a href="https://github.com/pi-base/data" target="_blank" rel="noopener">pi-base/data</a>
+      alone — “accepted” rows are reviewed and permanent, “yours” are local to this
+      browser and pending review</div>
+    <div id="found-holder"><div class="empty">none yet</div></div>
   </section>
 
   <section id="tab-check" hidden>
@@ -232,6 +243,7 @@ let CLAUSES = null;      // clause set incl. local true assertions
 let MODELS = null;       // space models incl. local virtual counterexamples
 let CLAUSEMETA = null;   // per clause: "T000123" | "assertion #i" | {local: a}
 let MODELMETA = null;    // per model: {kind:'space'|'assertion'} | {local: a}
+let LOCALTRUE = [];      // open pairs your local assertions made provable
 let SCORES = null;       // {ifTrue, ifFalse} aligned with openPairs
 let scoreJob = 0;
 let scoreWorker = null;
@@ -368,11 +380,16 @@ function recompute() {
 
   const byProp = PiEngine.makeIndex(clauses, np);
   openPairs = [];
+  LOCALTRUE = [];
   let addRef = 0, addProv = 0;
   for (const p of DATA.pairs) {
     const a = litOf(p.if), b = litOf(p.then);
     if (PiEngine.hasModel(models, a, b ^ 1)) { addRef++; continue; }
-    if (PiEngine.propagate(clauses, byProp, np, [a, b ^ 1]).contradiction) { addProv++; continue; }
+    if (PiEngine.propagate(clauses, byProp, np, [a, b ^ 1]).contradiction) {
+      addProv++;
+      LOCALTRUE.push(p);
+      continue;
+    }
     openPairs.push(p);
   }
   adjCounts = {
@@ -565,9 +582,12 @@ function refreshAll(notices) {
   renderStats();
   renderLocal();
   updateSubmit();
+  updateFoundLabel();
   requestScores();
   listBuilt = false;
+  foundBuilt = false;
   if (!$('tab-list').hidden) buildList();
+  if (!$('tab-found').hidden) buildFound();
   if (pending && !openPairs.includes(pending)) drawRandom();
   if (notices && notices.length) showLog(notices.join('\n'), false);
 }
@@ -805,15 +825,73 @@ function doCheck() {
   typeset(box);
 }
 
-// re-run the verdict display after asserting from the check tab
-function doCheckRefresh(pair) {
+function setCheckInputs(pair) {
   $('check-a').value = pair.if.name + ' (P' + parseInt(pair.if.uid.slice(1), 10) + ')';
   $('check-nega').checked = !pair.if.value;
   $('check-b').value = pair.then.name + ' (P' + parseInt(pair.then.uid.slice(1), 10) + ')';
   $('check-negb').checked = !pair.then.value;
+}
+
+// re-run the verdict display after asserting from the check tab
+function doCheckRefresh(pair) {
+  setCheckInputs(pair);
   const log = $('check-log').textContent;
   doCheck();
   showLog(log, false, $('check-log'));
+}
+
+// jump to the Check tab with this pair filled in and explained
+function explainPair(pair) {
+  setCheckInputs(pair);
+  switchTab('check');
+  doCheck();
+}
+
+// ------------------------------------------------ true-found tab
+
+let foundBuilt = false;
+
+function buildFound() {
+  foundBuilt = true;
+  const holder = $('found-holder');
+  const rows = DATA.new_true.map(p => ({ pair: p, src: 'accepted' }))
+    .concat(LOCALTRUE.map(p => ({ pair: p, src: 'yours (pending)' })));
+  holder.textContent = '';
+  if (!rows.length) {
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = 'none yet — assert something!';
+    holder.appendChild(div);
+    return;
+  }
+  const table = document.createElement('table');
+  table.innerHTML = '<tr><th>#</th><th>implication</th><th>source</th><th></th></tr>';
+  rows.forEach((r, i) => {
+    const tr = table.insertRow();
+    tr.insertCell().textContent = i + 1;
+    const stmt = tr.insertCell();
+    stmt.appendChild(litSpan(r.pair.if));
+    stmt.appendChild(document.createTextNode(' ⇒ '));
+    stmt.appendChild(litSpan(r.pair.then));
+    const src = tr.insertCell();
+    src.textContent = r.src;
+    src.className = r.src === 'accepted' ? 'holds' : 'sub-status todo';
+    const act = tr.insertCell();
+    act.className = 'actions';
+    const btn = document.createElement('button');
+    btn.className = 'mini w';
+    btn.textContent = 'why?';
+    btn.title = 'show the proof on the Check tab';
+    btn.onclick = () => explainPair(r.pair);
+    act.appendChild(btn);
+  });
+  holder.appendChild(table);
+  typeset(holder);
+}
+
+function updateFoundLabel() {
+  $('tab-btn-found').textContent =
+    'True found (' + (DATA.new_true.length + LOCALTRUE.length) + ')';
 }
 
 function fillDatalist() {
@@ -831,13 +909,12 @@ let listBuilt = false;
 let panelRow = null;
 
 function switchTab(name) {
-  $('tab-assert').hidden = name !== 'assert';
-  $('tab-list').hidden = name !== 'list';
-  $('tab-check').hidden = name !== 'check';
-  $('tab-btn-assert').classList.toggle('active', name === 'assert');
-  $('tab-btn-list').classList.toggle('active', name === 'list');
-  $('tab-btn-check').classList.toggle('active', name === 'check');
+  for (const t of ['assert', 'list', 'check', 'found']) {
+    $('tab-' + t).hidden = name !== t;
+    $('tab-btn-' + t).classList.toggle('active', name === t);
+  }
   if (name === 'list' && !listBuilt) buildList();
+  if (name === 'found' && !foundBuilt) buildFound();
 }
 
 function closePanel() {
@@ -943,6 +1020,7 @@ function filterList() {
 $('tab-btn-assert').onclick = () => switchTab('assert');
 $('tab-btn-list').onclick = () => switchTab('list');
 $('tab-btn-check').onclick = () => switchTab('check');
+$('tab-btn-found').onclick = () => switchTab('found');
 $('btn-check').onclick = doCheck;
 for (const id of ['check-a', 'check-b']) {
   $(id).addEventListener('keydown', e => { if (e.key === 'Enter') doCheck(); });
@@ -971,6 +1049,7 @@ fetch('data.json')
     renderAssertions();
     renderLocal();
     updateSubmit();
+    updateFoundLabel();
     requestScores();
     drawRandom();
     if (notices.length) showLog(notices.join('\n'), false);
